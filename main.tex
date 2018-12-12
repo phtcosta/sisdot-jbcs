@@ -457,7 +457,7 @@ the systems~\cite{bass2013software}.
 In order to further detail and illustrate the SISDOT architecture, and the main architectural decisions to address the constraints introduced in Section~\ref{sec:logistics}, here we present a scenario that refers to the generation of QDMs using a runtime architectural description, whose components, relationships, and interactions are illustrated in Figure~\ref{fig:fig:runtime_qdm}). 
 
 \begin{figure}[!ht] \centering
-	\includegraphics[scale=0.55]{img/runtimeView_qdm.png}
+	\includegraphics[scale=0.45]{img/runtimeView_qdm.png}
 	\caption{Runtime view of the architecture} 
 	\label{fig:fig:runtime_qdm}
 \end{figure}
@@ -780,7 +780,7 @@ Table \ref{table:analiseComparacao} presents some descriptive statistics of the 
 
 \begin{figure}[htb!] 
 	\centering
-	\includegraphics[width=.48\textwidth]
+	\includegraphics[width=.40\textwidth]
 	{img/artigo_correlacao.jpg}
 	\caption{\it Correlation between Java and Difference}
 	\label{fig:correlacao}
@@ -789,7 +789,7 @@ Table \ref{table:analiseComparacao} presents some descriptive statistics of the 
 Figure \ref{fig:geracao} shows the time necessary to generate QDMs for 5 different QCs. For each of them, 6 QMS were generated, with different amounts of \callers, 60, 100, 400, 700, 1000 and 2000.
 
 \begin{figure}[!ht] \centering
-	\includegraphics[width=.48\textwidth]
+	\includegraphics[width=.40\textwidth]
 	{img/artigo_geracao.jpg}
 	\caption{\it QDM Generation Time (ms)}
 	\label{fig:geracao}
@@ -829,8 +829,7 @@ it may not be possible to generalize the results we found.
 \section*{Related Work}
 \label{sec:related}
 
-We addressed the main architectural concerns of SISDOT using well-known patterns for enterprise systems~\cite{enterprise-patterns:book} and software architecture patterns~\cite{pattern-oriented:book}. Moreover, the ideas of using rule based engines to support inference within software systems are also not new~\cite{ORDONEZ2016353,li2012modeling}, and have been particularly explored in the health domain~\cite{mantas2012comparing,li2012modeling,jung2011executing}. For instance, Van Hille et al. present a comparison between Drools and OWL + SWRL for implementing the reasoning procedures of the alert module of an implantable
-cardioverter defibrillator. The authors conclude that Drools provides greater expressiveness when compared to the other approach. Our decision to use Drools to implement low-level rules was mostly based on its integration to the JEE platform, instead of its expressiveness.
+We addressed the main architectural concerns of SISDOT using well-known patterns for enterprise systems~\cite{enterprise-patterns:book} and software architecture patterns ~\cite{pattern-oriented:book}. Moreover, the ideas of using rule based engines to support inference within software systems are also not new~\cite{ORDONEZ2016353,li2012modeling}, and have been particularly explored in the health domain~\cite{mantas2012comparing,li2012modeling,jung2011executing}. For instance, Van Hille et al. present a comparison between Drools and OWL + SWRL for implementing the reasoning procedures of the alert module of an implantable cardioverter defibrillator. The authors conclude that Drools provides greater expressiveness when compared to the other approach. Our decision to use Drools to implement low-level rules was mostly based on its integration to the JEE platform, instead of its expressiveness.
 % We also considered the use of Prolog for at least
 % expressing the mechanics of the QDM generation, though
 % we postponed this work to a future work.
@@ -913,77 +912,6 @@ We would like to thank the anonymous referees for the valuable comments and sugg
 % \begin{thebibliography}
 % \bibitem{b1}
 % \end{thebibliography}
-
-
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%                               %%
-%% Figures                       %%
-%%                               %%
-%% NB: this is for captions and  %%
-%% Titles. All graphics must be  %%
-%% submitted separately and NOT  %%
-%% included in the Tex document  %%
-%%                               %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%
-%% Do not use \listoffigures as most will included as separate files
-
-\section*{Figures}
-  \begin{figure}[h!]
-  \caption{\csentence{Sample figure title.}
-      A short description of the figure content
-      should go here.}
-      \end{figure}
-
-\begin{figure}[h!]
-  \caption{\csentence{Sample figure title.}
-      Figure legend text.}
-      \end{figure}
-
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%                               %%
-%% Tables                        %%
-%%                               %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%% Use of \listoftables is discouraged.
-%%
-\section*{Tables}
-\begin{table}[h!]
-\caption{Sample table title. This is where the description of the table should go.}
-      \begin{tabular}{cccc}
-        \hline
-           & B1  &B2   & B3\\ \hline
-        A1 & 0.1 & 0.2 & 0.3\\
-        A2 & ... & ..  & .\\
-        A3 & ..  & .   & .\\ \hline
-      \end{tabular}
-\end{table}
-
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%                               %%
-%% Additional Files              %%
-%%                               %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section*{Additional Files}
-  \subsection*{Additional file 1 --- Sample additional file title}
-    Additional file descriptions text (including details of how to
-    view the file, if it is in a non-standard format or the file extension).  This might
-    refer to a multi-page table or a figure.
-
-  \subsection*{Additional file 2 --- Sample additional file title}
-    Additional file descriptions text.
 
 
 \end{backmatter}
