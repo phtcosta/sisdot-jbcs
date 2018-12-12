@@ -121,7 +121,12 @@
 	morecomment=[s]{/*}{*/}, 
 	morestring=[b]",
 	showspaces=false,
-	tabsize=2
+	tabsize=2, 
+	numbers=left, 
+	numbersep=2pt,
+	xleftmargin=2em,
+	frame=single,
+	framexleftmargin=1.5em
 }
 
 \lstdefinelanguage{Cucumber}[]{Java}{
@@ -466,12 +471,12 @@ In order to further detail and illustrate the SISDOT architecture, and the main 
 \begin{lstlisting}[frame=single, float=*, language=DRL, caption=Example of a \emph{low-level Drools rule}, label={code:drl}]
 rule "HLR 1"   	
 when
-$qc: QuadroDeCargosVO(operational == OPERATIONAL)	
-$roles: List( size > 0 ) from accumulate ( 
-$dep: DepartmentVO(depId not in (14086, 1130)) from $qc.deps and
-$role: RoleVO(function == "ROLE", roleId in (2, 12, 15, 21)) from $dep.roles and  		
-QualificationVO(code in ("782", "756")) from $role.qualifications;				
-collectList( $role ))	 		
+    $qc: QuadroDeCargosVO(operational == OPERATIONAL)	
+    $roles: List( size > 0 ) from accumulate ( 
+    $dep: DepartmentVO(depId not in (14086, 1130)) from $qc.deps and
+    $role: RoleVO(function == "ROLE", roleId in (2, 12, 15, 21)) from $dep.roles and  		
+    QualificationVO(code in ("782", "756")) from $role.qualifications;				
+    collectList( $role ))	 		
 then		 
 for(int i=0; i < $roles.size(); i++){       	
 RoleVO c = (RoleVO) $roles.get(i);
@@ -574,18 +579,18 @@ Our first test approach consists first in the specification of the required \cal
 
 \begin{small}
 	\begin{lstlisting}[frame=single, language=DSL, caption={\it Example of a \shc declaration using our DSL}, label={code:dslExample}]
-	rule 1 { 
-	type = OPERATIONAL, 
-	materials = [ 
-	("1051000007" : "Rifle" : 1), 
-	("1020100011" : "Rifle Carrying Case" : 2)
-	], 
-	cnds = [ 
-	(cond=NEG, type=DEPARTMENT, values=[14086 , 1130]),
-	(type=QUALIFICATION, values=[782, 756]), 
-	(type=ROLE, values=[2, 12, 15, 21])
-	]
-	}
+rule 1 { 
+    type = OPERATIONAL, 
+    materials = [ 
+        ("1051000007" : "Rifle" : 1), 
+        ("1020100011" : "Rifle Carrying Case" : 2)
+    ], 
+    cnds = [ 
+        (cond=NEG, type=DEPARTMENT, values=[14086 , 1130]),
+        (type=QUALIFICATION, values=[782, 756]), 
+        (type=ROLE, values=[2, 12, 15, 21])
+    ]
+}
 	\end{lstlisting}
 \end{small}
 
