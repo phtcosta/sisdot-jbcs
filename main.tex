@@ -636,6 +636,75 @@ Os cenários de teste foram divididos em três grupos, de acordo com as seções
 
 Cada grupo de cenários é responsável por testar várias das combinações das propriedades da entidade relativa ao grupo (QC, fração ou cargo). Em cada cenário é definido um chamador e uma lista com os resultados esperados, que são gerados de acordo com a combinação específica de propriedades deste cenário. Como o MEM definido no chamador não interfere na execução das regras, foi definido um MEM padrão para todos os chamadores gerados, assim como a quantidade igual a um (unitário). Isso foi feito para diminuir a complexidade do algoritmo de geração ao não precisar acessar o banco de dados várias vezes para recuperar MEMs de forma randômica, tendo em vista que não interferem na avaliação das regras envolvidas na geração do QDM.
 
+No grupo de QC existem as seguintes propriedades: operacionalidade, natureza, subnatureza e valor. Foram criados cenários específicos para cada propriedade e para combinações entre elas. Para a propriedade natureza do QC, por exemplo, foram definidos os seguintes cenários:
+
+\begin{itemize}
+\item natureza válida e tipoOM válido: este cenário gera um QDM válido, com resultados válidos, pois neste cenário é criado um chamador com os mesmos valores de natureza e operacionalidade (tipoOM) do QC para o qual será gerado o QDM, ou seja, natureza e tipoOM válidos;
+
+\item natureza válida e tipoOM válido (AMBOS): este cenário funciona de forma parecida com o anterior, mas o tipoOM é definido como "AMBOS" no chamador. Este tipoOM indica que o QC pode ser operacional ou não-operacional;
+
+\item natureza válida e tipoOM inválido: o valor da natureza é o mesmo do QC, pois é válido, e o valor do tipoOM é alterado. Por exemplo: se o QC for operacional o valor é alterado para não-operacional e vice-versa;
+
+\item natureza inválida e tipoOM válido: o valor da natureza deve ser inválido no chamador, ou seja, um valor diferente da natureza do QC. A geração deste valor inválido de natureza é realizado de forma randômica, usando a seed configurada no plugin maven, em uma lista de códigos de naturezas reais previamente definida;
+
+\item natureza inválida e tipoOM inválido: os valores de natureza e tipoOM são inválidos, e são gerados conforme citado anteriormente: invertendo o valor de operacionalidade e recuperando randomicamente um código de natureza da lista declarada previamente;
+
+\item negar natureza, inválido: as combinações citadas anteriormente nesta lista possuem chamadores com regras do tipo "AFIRMACAO", o tipo padrão de uma regra. Mas existe o tipo "NEGACAO", onde a regra é negada, ou seja, a condição (na DRL) é válida quando o valor testado não pertence à lista de valores especificados na regra. Neste cenário, por exemplo, há uma regra de negação da natureza de forma que o QDM seja inválido. Então foi criada uma regra para "NATUREZA" do tipo "NEGACAO" definindo como valor o código da natureza do QC. Com isso, esta regra não é válida para este QC, sendo válida para todas as outras naturezas exceto a deste QC;
+
+\item negar natureza, válido: para este cenário é criado um chamador com uma regra para "NATUREZA" do tipo "NEGACAO", mas gerando um código de natureza diferente da natureza do QC. Com isso, esta regra é válida para este QC.
+\end{itemize}
+
+\begin{table}[htb!]
+	\centering
+	\caption{Cenários definidos para Valor de QC}
+	\label{table:valor}
+	\begin{center}
+		\begin{tabular}{ccccc}
+			\toprule
+\textbf{Cenário} & \textbf{Valor} & \textbf{Subnatureza} & \textbf{Natureza} & \textbf{TipoOM} \\ \hline
+1                & 0              &                      &                   & 0               \\ \hline
+2                & 0              &                      &                   & 1               \\ \hline
+3                & 1              &                      &                   & 0               \\ \hline
+4                & 1              &                      &                   & 1               \\ \hline
+5                & 0              &                      & 0                 & 0               \\ \hline
+6                & 0              &                      & 0                 & 1               \\ \hline
+7                & 0              &                      & 1                 & 0               \\ \hline
+8                & 0              &                      & 1                 & 1               \\ \hline
+9                & 1              &                      & 0                 & 0               \\ \hline
+10               & 1              &                      & 0                 & 1               \\ \hline
+11               & 1              &                      & 1                 & 0               \\ \hline
+12               & 1              &                      & 1                 & 1               \\ \hline
+13               & 0              & 0                    & 0                 & 0               \\ \hline
+14               & 0              & 0                    & 0                 & 1               \\ \hline
+15               & 0              & 0                    & 1                 & 0               \\ \hline
+16               & 0              & 0                    & 1                 & 1               \\ \hline
+17               & 0              & 1                    & 0                 & 0               \\ \hline
+18               & 0              & 1                    & 0                 & 1               \\ \hline
+19               & 0              & 1                    & 1                 & 0               \\ \hline
+20               & 0              & 1                    & 1                 & 1               \\ \hline
+21               & 1              & 0                    & 0                 & 0               \\ \hline
+22               & 1              & 0                    & 0                 & 1               \\ \hline
+23               & 1              & 0                    & 1                 & 0               \\ \hline
+24               & 1              & 0                    & 1                 & 1               \\ \hline
+25               & 1              & 1                    & 0                 & 0               \\ \hline
+26               & 1              & 1                    & 0                 & 1               \\ \hline
+27               & 1              & 1                    & 1                 & 0               \\ \hline
+28               & 1              & 1                    & 1                 & 0               \\ \hline
+		\end{tabular}
+	\end{center}
+\end{table}
+
+Seguindo a mesma linha de combinações utilizadas paras cenários envolvendo natureza do QC, foram criados cenários para subnatureza e valor. Não foram criados cenários para tipoOM pois esta é uma propriedade de preenchimento obrigatório no chamador e a checagem de sua validade já é exercitada em todos os cenários do grupo. Na Table \ref{table:valor} são apresentados os cenários definidos para o Valor do QC e suas combinações. Na primeira coluna é apresentado o número do cenário, criado apenas para facilitar uma possível referência a uma linha específica da tabela. As outras colunas contém os valores das propriedades do QC sendo combinadas. A células com valor 0 indicam que o valor desta propriedade, indicada pela coluna, é inválido, ou seja, deverá ser selecionado um valor randomicamente de uma lista previamente definida e este valor deve ser diferente do valor que essa propriedade apresenta no QC. As células com o valor 1 indicam que o valor desta propriedade é válido, ou seja, é o mesmo valor definido no QC para esta propriedade. As células sem valor indicam que essa propriedade não faz parte da combinação. 
+
+No grupo Cargo existem as seguintes propriedades: código do cargo, subcírculo ao qual o cargo pertence, o posto (patente) necessário para ocupar o cargo, e a arma (Arma, Quadro ou Serviço) necessária para ocupar o cargo. O subcírculo está relacionado às graduações (posto/patente) existentes, servindo como uma forma de agrupamento. Por exemplo: o subcírculo superior agrupa as patentes de coronel, tenente-coronel e major; o subcírculo subalterno agrupa os tenentes. 
+
+Para cada cenário do grupo de cargos foi selecionado um cargo aleatoriamente da lista de cargos do QC, utilizando a seed configurada no plugin maven. De acordo com o cargo selecionado são geradas as regras conforme a combinação de propriedades especificada para o cenário. Para cada cenário, além das regras, é gerada também uma lista contendo os resultados esperados, ou seja, os dados que se espera encontrar no QDM gerado para o QC. 
+
+Para este trabalho foram especificados 100 cenários. Todos os cenários gerados, independente do grupo, contém um chamador, com as regras referentes à combinação de propriedades definida para o cenário, e uma lista de resultados esperados, que serão comparados com os dados do QDM gerado. Para cada QC declarado no plugin é gerada uma lista de cenários. Para cada QC é gerado um arquivo cucumber contendo os cenários definido para este QC. A geração do arquivo é realizada com o uso do Freemarker, usando um template previamente definido.
+
+O processo de geração automática de testes pode ser resumido da seguinte maneira: o plugin maven deve ser declarado e configurado, indicando a lista com os códigos dos QCs para os quais devem ser gerados testes. Então, para cada QC da lista são gerados cenários, com variações em suas propriedades de acordo com o QC sendo testado. Os cenários gerados são transformados em arquivos do cucumber e de DSL, que representam os cenários gerados. Houve então uma conversão dos cenários gerados com base na técnica Property-based Testing (PBT) em casos de teste por exemplo, que serão executados automaticamente durante a fase adequada do ciclo de vida de \textit{build} do maven. Existe a possibilidade de geração de relatório da execução dos testes em alguns formatos, como: html e json.
+
+
 %\begin{figure}[!ht] \centering
 %  \includegraphics[width=.32\textwidth]
 %  {img/plugin.jpg}
@@ -661,9 +730,9 @@ Cada grupo de cenários é responsável por testar várias das combinações das
 % </plugin>	
 % \end{lstlisting}
 
-In this second approach, for each of the possible combinations, we generate a \shc that meets the conditions and a cucumber feature that exercises the \shc and compares the expected results declared in the feature. Each \shc is considered during the generation of the QDM to the QCs specified in the maven plugin.% (as shown in Listing~\ref{code:plugin}).
+\textcolor{red}{In this second approach, for each of the possible combinations, we generate a \shc that meets the conditions and a cucumber feature that exercises the \shc and compares the expected results declared in the feature. Each \shc is considered during the generation of the QDM to the QCs specified in the maven plugin.
 That is, to use this architecture characteristic (here we consider testability as an architecture concern), we ``feed'' the maven plugin with a list of QC codes for which the QDMs should be generated, besides other optional information, which have default values, such as: database connection string, seed to be used in the random selection of values within a combination (e.g., considering 20 different kinds of organizational unities, randomly take 5 for generating the set of combinations), and the output directory 
-where the code should be exported. 
+where the code should be exported. }
 
 %\begin{figure}[!ht] \centering
 %  \includegraphics[width=.45\textwidth]
