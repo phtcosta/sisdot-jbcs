@@ -59,6 +59,7 @@
 \usepackage{booktabs} % For formal tables
 \usepackage{graphicx}
 \usepackage{xspace}
+\usepackage{ragged2e}
 
 \usepackage{lstcustom}
 
@@ -90,18 +91,30 @@
 	morekeywords={grammar, with, hidden, generate, as, import, returns, current, terminal, enum},
 	keywordstyle=[2]{\textbf},
 	morestring=[b]",
-	tabsize=3
+	tabsize=2,
+	numbers=left, 
+	numbersep=2pt,
+	numberblanklines=false,
+	xleftmargin=2em,
+	frame=single,
+	framexleftmargin=1.5em
 }
 \newcommand{\lstXtext}[1]{\lstinline[breaklines=true,language=Xtext,basicstyle=\listingsfontinline,mathescape,literate={\-}{}{0\discretionary{-}{}{}}]\S#1\S}
 
 
 \lstdefinelanguage{DRL}[]{Java}{
-	morekeywords={rule, when, from, accumulate, and, in, then, for, int, end},
+	morekeywords={rule, when, from, accumulate, and, not, in, then, for, int, end},
 	keywordstyle=[2]{\textbf},
 	morecomment=[l]{//}, 
 	morecomment=[s]{/*}{*/}, 
 	morestring=[b]",
-	tabsize=2
+	tabsize=2,
+	numbers=left, 
+	numbersep=2pt,
+	numberblanklines=true,
+	xleftmargin=2em,
+	frame=single,
+	framexleftmargin=1.5em
 }
 
 \lstdefinelanguage{Freemarker}[]{Java}{
@@ -111,7 +124,13 @@
 	morecomment=[s]{/*}{*/}, 
 	morestring=[b]",
 	showspaces=false,
-	tabsize=2
+	tabsize=2,
+	numbers=left, 
+	numbersep=2pt,
+	numberblanklines=false,
+	xleftmargin=2em,
+	frame=single,
+	framexleftmargin=1.5em
 }
 
 \lstdefinelanguage{DSL}[]{Java}{
@@ -124,6 +143,7 @@
 	tabsize=2, 
 	numbers=left, 
 	numbersep=2pt,
+	numberblanklines=false,
 	xleftmargin=2em,
 	frame=single,
 	framexleftmargin=1.5em
@@ -136,7 +156,13 @@
 	morecomment=[s]{/*}{*/}, 
 	morestring=[b]",
 	showspaces=false,
-	tabsize=2
+	tabsize=2,
+	numbers=left, 
+	numbersep=3pt,
+	numberblanklines=false,
+	xleftmargin=2em,
+	frame=single,
+	framexleftmargin=1.5em
 }
 
 \lstdefinelanguage{Plugin}[]{Java}{
@@ -255,6 +281,7 @@
 \begin{abstractbox}
 
 \begin{abstract} % abstract
+\justify
 In this paper we present the main design and architectural decisions to build an enterprise system that deals with the distribution of equipment to the Brazilian Army. The requirements of the system are far from trivial, and we have to conciliate the need to extract business rules from the source code (increasing software flexibility) with the requirements of not exposing the use of declarative languages to use a rule-based engine and simplifying the tests of the application. Considering these goals, we present in this paper a seamless integration of meta-programming and domain-specific languages. The use of meta-programming allowed us to isolate and abstract all definitions necessary to externalize the business rules that ensure the correct distribution of the equipment through the Brazilian Army unities. The use of a domain specific language simplified the process of writing automatic test cases related to our domain. Although our architecture targets the specific needs of the Brazilian Army, we believe that logistic systems from other institutions might also benefit from our technical decisions.
 \end{abstract}
 
@@ -336,14 +363,14 @@ Nevertheless, introducing either a logic language (e.g., Prolog or Datalog) or a
 This article describes the main design and architectural decisions adopted to implement the mechanisms that assist decision makers to plan the distribution of military materials and equipment across the organizational structure of the Brazilian Army. These decisions aim to both (a) abstract the adoption of a business rule engine using {\bf meta-programming} and (b) allow domain experts to simulate the definition and testing of rules using a {\bf domain specific language}. Accordingly, this paper presents the following contributions:
 
 \begin{itemize}
-	\item A description of the use of generative programming techniques to raise the abstraction level 	related to the adoption of a logic programming language in the specification of rules for the 	distribution of materials and equipment through organizational unities.
+	\item A description of the use of generative programming techniques to raise the abstraction level 	related to the adoption of a logic programming language in the specification of rules for the distribution of materials and equipment through organizational unities.
 	\item A report of an empirical evaluation of our design and architectural decisions, reinforcing that they fulfill not only the needs of the domain specialists, but also existing technical constraints. 	
 \end{itemize} 
 
 Although we discuss the distribution of materials and equipment for the military domain (which is far from trivial), we believe that the architectural decisions discussed here can be exploited to other logistics and endorsements scenarios in which it is also desirable to transparently introduce the support for rule based engines in enterprise systems.
 
 We organized this article as follows. Section \ref{sec:logistics} presents the concepts related to the domain of material logistics. Section~\ref{sec:rbs} presents the concepts related to business rules and rule based engines and Section~\ref{sec:gp} presents some 
-background information related to \emph{generative programming}---techniques that we use to support the design and implementation of our approach. Section~\ref{sec:architecture} presents the main design and architectural decisions we take to develop the mechanism responsible for the distribution of materials. In Section~\ref{sec:case_study} we present the results of an empirical study that validate our approach. Finally, Section~\ref{sec:related} and Section~\ref{sec:conclusao} relate our work with the exising literature and present some final remarks. 
+background information related to \emph{generative programming}---techniques that we use to support the design and implementation of our approach. Section~\ref{sec:architecture} presents the main design and architectural decisions we take to develop the mechanism responsible for the distribution of materials. In Section~\ref{sec:case_study} we present the results of an empirical study that validate our approach. Finally, Section~\ref{sec:related} and Section~\ref{sec:conclusao} relate our work with the existing literature and present some final remarks. 
 
 
 
@@ -483,28 +510,51 @@ the systems~\cite{bass2013software}.
 %% Runtime Architectural Description for QDM Generation
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Runtime Architectural Description for QDM Generation}
-In order to further detail and illustrate the SISDOT architecture, and the main architectural decisions to address the constraints introduced in Section~\ref{sec:logistics}, here we present a scenario that refers to the generation of QDMs using a runtime architectural description, whose components, relationships, and interactions are illustrated in Figure~\ref{fig:fig:runtime_qdm}). 
+In order to further detail and illustrate the SISDOT architecture, and the main architectural decisions to address the constraints introduced in Section~\ref{sec:logistics}, here we present a scenario that refers to the generation of QDMs using a runtime architectural description, whose components, relationships, and interactions are illustrated in Figure~\ref{fig:runtime_qdm}). 
 
-\begin{figure}[!ht] \centering
-	\includegraphics[scale=0.45]{img/runtimeView_qdm.png}
+\begin{figure}[!ht] %\centering
+	\includegraphics[scale=0.48]{img/runtimeView_qdm.png}
 	\caption{Runtime view of the architecture} 
-	\label{fig:fig:runtime_qdm}
+	\label{fig:runtime_qdm}
 \end{figure}
 
+\textcolor{red}{arrumar exemplo mais completo de DRL}
 
 \begin{lstlisting}[frame=single, float=*, language=DRL, caption=Example of a \emph{low-level Drools rule}, label={code:drl}]
 rule "HLR 1"   	
-when
-    $qc: QuadroDeCargosVO(operational == OPERATIONAL)	
+  when
+    $qc: QuadroDeCargosVO( 
+       (operational == OPERATIONAL || operational == NOT_OPERATIONAL)
+       , natureId not in (50, 51)
+       , valueId in (23, 41, 90, 50, 42, 31, 21, 32, 20, 30, 40) 
+    )	
     $roles: List( size > 0 ) from accumulate ( 
-    $dep: DepartmentVO(depId not in (14086, 1130)) from $qc.deps and
-    $role: RoleVO(function == "ROLE", roleId in (2, 12, 15, 21)) from $dep.roles and  		
-    QualificationVO(code in ("782", "756")) from $role.qualifications;				
-    collectList( $role ))	 		
-then		 
-for(int i=0; i < $roles.size(); i++){       	
-RoleVO c = (RoleVO) $roles.get(i);
-helper.add(1051000007, c.getFractionId(), c.getRoleId());   
+      $dep: DepartmentVO(
+         depId not in (14086, 1130)
+      ) from $qc.deps 
+      and
+      $role: RoleVO(
+         function == "ROLE"
+         , roleId not in (364, 539, 121, 2205, 528, 2204, 539) 
+         , rankId in (24, 23, 44, 22, 42) 
+         , armsId not in (1055, 10, 833, 5308, 5393, 729, 5110, 15, 5112, 5390, 12) 
+      ) from $dep.roles 
+      and  		
+      QualificationVO(
+         code not in ("782", "756", "793", "768", "765", "751", "921", "749", "767", "748")
+      ) from $role.qualifications
+      and
+      ObservationVO(
+         code in ("40D","40K")
+      ) from $role.observations;
+	
+      collectList( $role )
+    )	 		
+  then		 
+    for(int i=0; i < $roles.size(); i++){       	
+      RoleVO c = (RoleVO) $roles.get(i);
+      helper.add(1051000007, c.getFractionId(), c.getRoleId());
+    }
 end
 \end{lstlisting}
 
@@ -532,7 +582,7 @@ An \shc has a set of conditions that fits the conditional part of a rule (``if''
 %\end{lstlisting}
 
 
-The list of retrieved \callers contains only Java objects. In order to be able to use the rule engine in a transparent way for the end users (and also for developers in future maintenance scenarios), we decided to use a meta-programming approach, translating these objects into a set of rules (a program in logic programming) that might be used by a rule-based engine. As mentioned before, we decided to use the \emph{Drools rule-based engine} in the context of SISDOT (Figure \ref{fig:fig:runtime_qdm}), mostly because of its integration capabilities with both JEE systems and the Wildfly application server. Accordingly, the \callers are translated into DRL rules (Listing~\ref{code:drl} presents an example of a \emph{low-level Drools rule}). To this end, we use a template engine (FreeMaker) to implement this particular transformation (Figure \ref{fig:fig:runtime_qdm}), using a template that contains the required \emph{markups} for transforming \shc into \emph{low-level} Drools rules. That is, for each \shc, the template engine populates the template, resulting in a DRL rule consistent with the converted \shc.
+The list of retrieved \callers contains only Java objects. In order to be able to use the rule engine in a transparent way for the end users (and also for developers in future maintenance scenarios), we decided to use a meta-programming approach, translating these objects into a set of rules (a program in logic programming) that might be used by a rule-based engine. As mentioned before, we decided to use the \emph{Drools rule-based engine} in the context of SISDOT (Figure \ref{fig:runtime_qdm}), mostly because of its integration capabilities with both JEE systems and the Wildfly application server. Accordingly, the \callers are translated into DRL rules (Listing~\ref{code:drl} presents an example of a \emph{low-level Drools rule}). To this end, we use a template engine (FreeMaker) to implement this particular transformation (Figure \ref{fig:runtime_qdm}), using a template that contains the required \emph{markups} for transforming \shc into \emph{low-level} Drools rules. That is, for each \shc, the template engine populates the template, resulting in a DRL rule consistent with the converted \shc.
 % A code snippet of the template used for DRL generation can be seen in Appendix A. 
 
 The RHS of the Drools rule of Listing~\ref{code:drl} iterates over all selected military roles (that satisfy the constraints of the LHS). We use a helper class to assign the equipment id (in this case a \emph{rifle} whose id is 1051000007) to the individual roles. Besides providing means to populate a QDM, this helper class also checks some constraints related to the QDM domain model. 
@@ -558,11 +608,6 @@ As explained before, to generate a QDM, a set of \callers must be previously dec
 We implemented \hlrdsl  using Xtext, which generates plugins that allow code editing in both Eclipse and IntelliJ, plus an editor that can be embedded in a web application. This way, a developer writing test scripts might use \hlrdsl to take advantages of the functionality provided by these plugins. To implement a DSL using Xtext, it is first necessary to declare a grammar expressed using a syntax similar to ANTLR~\cite{parr2013}. Listing~\ref{code:gramatica} presents the grammar of our DSL. From this grammar,the Xtext tool suite generates a lexer, a parser, a set of classes representing the AST (Abstract Syntax Tree), and an editor with several features typically available in IDEs.
 % Although Xtext provides an interesting implementation for all these concerns, a language designer is also able to customize several of the Xtext outcomes~\cite{bettini2016}.
 
-%\begin{figure}[!ht] \centering
-%	\includegraphics[width=.47\textwidth]{img/artigo_gramatica.jpg}
-%	\caption{\it Xtext grammar defining the DSL structure} 
-%	\label{fig:gramatica}
-%\end{figure}
 
 \begin{lstlisting}[frame=single, language=Xtext, caption={\it Xtext grammar defining the DSL structure}, label={code:gramatica}]
 grammar br.unb.cic.sisdot.chamador.HLRDsl 
@@ -593,10 +638,7 @@ enum RuleType: NATURE | SUB_NATURE | VALUE | DEPARTMENT | ARMS | ROLE_QC | SUB_C
 \end{lstlisting}
 
 Listing \ref{code:dslExample} presents a simple example of a \shc declaration using our DSL. The goal of this rule is to distribute 
-the materials (defined in the list of materials construct) for \emph{operational} OMs (see the type construct) and militaries \emph{not working in the specified list of departments} with a set of qualifications and roles. While the definition of this rule 
-using our DSL requires 12 lines of code, the corresponding definition of the same rule using a Java test case requires more than 50 lines of imperative code.
-
-Our first test approach consists first in the specification of the required \callers in a \hlrdsl file. Next, the \emph{behavior under test} is detailed as features using the Cucumber~\cite{wynne2017cucumber} framework (we present an example of a feature in Listing \ref{code:cucumber}). After that, the developer details the implementation steps of the features by (a) specifying which \callers(previously declared using our DSL) should be considered in the test execution, (b) specifying which QC the QDM should be generated, and (c) specifying the expected results in terms of the properties of the expected QDM. To this typical scenario, we use a testing  infrastructure that supports several facilities, that aims to increase productivity, such as: database connectivity, auxiliary methods for executing queries in the database, and predeclared rules in the rule engine.
+the materials (defined in the list of materials construct) for \emph{operational} OMs (see the type construct) and militaries \emph{not working in the specified list of departments} with a set of qualifications and roles. \textcolor{red}{While the definition of this rule using our DSL requires 12 lines of code, the corresponding definition of the same rule using a Java test case requires more than 50 lines of imperative code.}
 
 \begin{small}
 	\begin{lstlisting}[frame=single, language=DSL, caption={\it Example of a \shc declaration using our DSL}, label={code:dslExample}]
@@ -615,16 +657,41 @@ rule 1 {
 	\end{lstlisting}
 \end{small}
 
+Our first test approach consists first in the specification of the required \callers in a \hlrdsl file. Next, the \emph{behavior under test} is detailed as features using the Cucumber~\cite{wynne2017cucumber} framework (we present an example of a feature in Listing \ref{code:cucumber}). After that, the developer details the implementation steps of the features by (a) specifying which \callers(previously declared using our DSL) should be considered in the test execution, (b) specifying which QC the QDM should be generated, and (c) specifying the expected results in terms of the properties of the expected QDM. To this typical scenario, we use a testing  infrastructure that supports several facilities, that aims to increase productivity, such as: database connectivity, auxiliary methods for executing queries in the database, and predeclared rules in the rule engine.
 
 That is, \hlrdsl simplifies the process of specifying \callers and its primary goal was to assist in test activities. However, after presenting to domain experts some examples of \callers specified using our DSL, we realized that \hlrdsl might also be useful to simulate the specification of rules, allowing a better understanding of the effect of each \shc for building QDMs.
 
+\begin{lstlisting}[frame=single, language=Cucumber, caption={\it Cucumber feature}, label={code:cucumber}]
+Feature: QDM 757311
+As a user
+I want to generate a QDM from HLRs
 
-%\begin{figure}[!ht] \centering
-%	\includegraphics[width=.48\textwidth]{img/artigo_drl.jpg}
-%	\caption{\it DRL generated} 
-%	\label{fig:drl}
-%\end{figure}
+Scenario: Test 1
+Given QC with code 757311
+And HRL: 1, 2
+When I generate a QDM
+And the results are consistent
+Then positions must be populated
+| idDep    | idPos   | codot      | amount |
+| 6765748  | 10403   | 1051000025 | 1      |
+| 6765748  | 10403   | 1020100017 | 1      |
+| 6765748  | 10403   | 1020100013 | 1      |
+| 6765748  | 10403   | 1051000006 | 1      |
+| 6765748  | 21328   | 1051000025 | 1      |
+| 6765750  | 10122   | 1051000025 | 1      |    
+| 6765793  | 13276   | 1051000025 | 6      |
+| 6765796  | 24655   | 1051000025 | 1      |
+| 6765796  | 24429   | 1051000025 | 2      |
+| 6765798  | 24429   | 1051000025 | 3      |
+| 6765798  | 11433   | 1051000025 | 9      |   
+And the final result must be:
+| codot      | amount |
+| 1020100013 | 74     |
+| 1020100017 | 74     |
+| 1051000006 | 74     |
+| 1051000025 | 74     |
 
+\end{lstlisting}
 
 Our second test approach automatically generates test cases from our DSL and from a random sample of simple combinations that characterize artificial organizational unities. This \emph{property based approach} involves a custom Maven plugin that currently generates simple test cases, freeing the tester to create only complex tests related to the QDM generation. 
 
@@ -653,6 +720,8 @@ No grupo de QC existem as seguintes propriedades: operacionalidade, natureza, su
 
 \item negar natureza, válido: para este cenário é criado um chamador com uma regra para "NATUREZA" do tipo "NEGACAO", mas gerando um código de natureza diferente da natureza do QC. Com isso, esta regra é válida para este QC.
 \end{itemize}
+
+Seguindo a mesma linha de combinações utilizadas paras cenários envolvendo natureza do QC, foram criados cenários para subnatureza e valor. Não foram criados cenários para tipoOM pois esta é uma propriedade de preenchimento obrigatório no chamador e a checagem de sua validade já é exercitada em todos os cenários do grupo. Na Table \ref{table:valor} são apresentados os cenários definidos para o Valor do QC e suas combinações. Na primeira coluna é apresentado o número do cenário, criado apenas para facilitar uma possível referência a uma linha específica da tabela. As outras colunas contém os valores das propriedades do QC sendo combinadas. A células com valor 0 indicam que o valor desta propriedade, indicada pela coluna, é inválido, ou seja, deverá ser selecionado um valor randomicamente de uma lista previamente definida e este valor deve ser diferente do valor que essa propriedade apresenta no QC. As células com o valor 1 indicam que o valor desta propriedade é válido, ou seja, é o mesmo valor definido no QC para esta propriedade. As células sem valor indicam que essa propriedade não faz parte da combinação. 
 
 \begin{table}[htb!]
 	\centering
@@ -694,8 +763,6 @@ No grupo de QC existem as seguintes propriedades: operacionalidade, natureza, su
 	\end{center}
 \end{table}
 
-Seguindo a mesma linha de combinações utilizadas paras cenários envolvendo natureza do QC, foram criados cenários para subnatureza e valor. Não foram criados cenários para tipoOM pois esta é uma propriedade de preenchimento obrigatório no chamador e a checagem de sua validade já é exercitada em todos os cenários do grupo. Na Table \ref{table:valor} são apresentados os cenários definidos para o Valor do QC e suas combinações. Na primeira coluna é apresentado o número do cenário, criado apenas para facilitar uma possível referência a uma linha específica da tabela. As outras colunas contém os valores das propriedades do QC sendo combinadas. A células com valor 0 indicam que o valor desta propriedade, indicada pela coluna, é inválido, ou seja, deverá ser selecionado um valor randomicamente de uma lista previamente definida e este valor deve ser diferente do valor que essa propriedade apresenta no QC. As células com o valor 1 indicam que o valor desta propriedade é válido, ou seja, é o mesmo valor definido no QC para esta propriedade. As células sem valor indicam que essa propriedade não faz parte da combinação. 
-
 No grupo Cargo existem as seguintes propriedades: código do cargo, subcírculo ao qual o cargo pertence, o posto (patente) necessário para ocupar o cargo, e a arma (Arma, Quadro ou Serviço) necessária para ocupar o cargo. O subcírculo está relacionado às graduações (posto/patente) existentes, servindo como uma forma de agrupamento. Por exemplo: o subcírculo superior agrupa as patentes de coronel, tenente-coronel e major; o subcírculo subalterno agrupa os tenentes. 
 
 Para cada cenário do grupo de cargos foi selecionado um cargo aleatoriamente da lista de cargos do QC, utilizando a seed configurada no plugin maven. De acordo com o cargo selecionado são geradas as regras conforme a combinação de propriedades especificada para o cenário. Para cada cenário, além das regras, é gerada também uma lista contendo os resultados esperados, ou seja, os dados que se espera encontrar no QDM gerado para o QC. 
@@ -704,13 +771,6 @@ Para este trabalho foram especificados 100 cenários. Todos os cenários gerados
 
 O processo de geração automática de testes pode ser resumido da seguinte maneira: o plugin maven deve ser declarado e configurado, indicando a lista com os códigos dos QCs para os quais devem ser gerados testes. Então, para cada QC da lista são gerados cenários, com variações em suas propriedades de acordo com o QC sendo testado. Os cenários gerados são transformados em arquivos do cucumber e de DSL, que representam os cenários gerados. Houve então uma conversão dos cenários gerados com base na técnica Property-based Testing (PBT) em casos de teste por exemplo, que serão executados automaticamente durante a fase adequada do ciclo de vida de \textit{build} do maven. Existe a possibilidade de geração de relatório da execução dos testes em alguns formatos, como: html e json.
 
-
-%\begin{figure}[!ht] \centering
-%  \includegraphics[width=.32\textwidth]
-%  {img/plugin.jpg}
-%  \caption{\it Maven plugin for test generation}
-%  \label{fig:pluginExample}
-%\end{figure}
 % \begin{lstlisting}[frame=single, language=Plugin, caption={\it Maven plugin for test generation}, label={code:plugin}]
 % <plugin>
 %   <groupId>xxx</groupId>
@@ -731,47 +791,7 @@ O processo de geração automática de testes pode ser resumido da seguinte mane
 % \end{lstlisting}
 
 \textcolor{red}{In this second approach, for each of the possible combinations, we generate a \shc that meets the conditions and a cucumber feature that exercises the \shc and compares the expected results declared in the feature. Each \shc is considered during the generation of the QDM to the QCs specified in the maven plugin.
-That is, to use this architecture characteristic (here we consider testability as an architecture concern), we ``feed'' the maven plugin with a list of QC codes for which the QDMs should be generated, besides other optional information, which have default values, such as: database connection string, seed to be used in the random selection of values within a combination (e.g., considering 20 different kinds of organizational unities, randomly take 5 for generating the set of combinations), and the output directory 
-where the code should be exported. }
-
-%\begin{figure}[!ht] \centering
-%  \includegraphics[width=.45\textwidth]
-%  {img/artigo_cucumber.jpg}
-%  \caption{\it Cucumber feature}
-%  \label{fig:cucumber}
-%\end{figure}
-
-\begin{lstlisting}[frame=single, language=Cucumber, caption={\it Cucumber feature}, label={code:cucumber}]
-Feature: QDM 757311
-As a user
-I want to generate a QDM from HLRs
-
-Scenario: Test 1
-Given QC with code 757311
-And HRL: 1, 2
-When I generate a QDM
-And the results are consistent
-Then positions must be populated
-| idDep    | idPos   | codot      | amount |
-| 6765748  | 10403   | 1051000025 | 1      |
-| 6765748  | 10403   | 1020100017 | 1      |
-| 6765748  | 10403   | 1020100013 | 1      |
-| 6765748  | 10403   | 1051000006 | 1      |
-| 6765748  | 21328   | 1051000025 | 1      |
-| 6765750  | 10122   | 1051000025 | 1      |    
-| 6765793  | 13276   | 1051000025 | 6      |
-| 6765796  | 24655   | 1051000025 | 1      |
-| 6765796  | 24429   | 1051000025 | 2      |
-| 6765798  | 24429   | 1051000025 | 3      |
-| 6765798  | 11433   | 1051000025 | 9      |   
-And the final result must be:
-| codot      | amount |
-| 1020100013 | 74     |
-| 1020100017 | 74     |
-| 1051000006 | 74     |
-| 1051000025 | 74     |
-
-\end{lstlisting}
+That is, to use this architecture characteristic (here we consider testability as an architecture concern), we ``feed'' the maven plugin with a list of QC codes for which the QDMs should be generated, besides other optional information, which have default values, such as: database connection string, seed to be used in the random selection of values within a combination (e.g., considering 20 different kinds of organizational unities, randomly take 5 for generating the set of combinations), and the output directory where the code should be exported. }
 
 After running the plugin, with the generated code, the tests are executed in a similar way to the test definitions detailed before. The tests run along with the other unit tests declared, whether DSL-based or not.
 
@@ -795,7 +815,7 @@ For the validation of the proposed architecture we conducted an empirical study,
 	\item \textbf{RQ.3}: Does our proposed approach, based on meta-programming, generate QDMs within a satisfactory time-frame?
 \end{itemize}
 
-\textbf{RQ.1} deals with the most important concern: correctness regarding the QDM generation. It is intended to demonstrate that the solution not only automatically generates the rules, eliminating the work that the developer would have to implement the solution in Java, but also that the proposed approach leads to the expected QDMs when considering a well defined set of \callers. \textbf{RQ.2} is related to the productivity of the tester and demonstrates how much code the developer have to write when using our DSL, compared to the effort to specify \callers using the Java language in unit test cases. During the activities of requirements elicitation,we identified a softgoal stating the  acceptable time for generating a QDM, which should not be above 5 seconds, when using 1000 \callers. Thus, \textbf{RQ.3} serves to ensure that the QDMs are generated in a satisfactory time.
+\textbf{RQ.1} deals with the most important concern: correctness regarding the QDM generation. It is intended to demonstrate that the solution not only automatically generates the rules, eliminating the work that the developer would have to implement the solution in Java, but also that the proposed approach leads to the expected QDMs when considering a well defined set of \callers. \textbf{RQ.2} is related to the productivity of the tester and demonstrates how much code the developer have to write when using our DSL, compared to the effort to specify \callers using the Java language in unit test cases. During the activities of requirements elicitation,we identified a softgoal stating the  acceptable time for generating a QDM, which should not be above 10 seconds, when using 1000 \callers. Thus, \textbf{RQ.3} serves to ensure that the QDMs are generated in a satisfactory time.
 
 
 
@@ -810,32 +830,45 @@ In a meeting with the domain experts, one of the specialists said: ``I got surpr
 
 To answer the other two research questions, we collected the following metrics: lines of code (LOC) and execution time. The choice of these two metrics is related to the size of the code, which may indicate higher productivity; and to the fulfillment of the functional requirement that determines the maximum execution time for the generation of QDMs.
 
+\textcolor{red}{arrumar: nao sao 66}
+
+We use as a benchmark 66 \callers declared in its database. These \callers correspond to real rules used by the Brazilian Army to perform some tests related to the generation of QDMs. We converted each \shc written using JUnit to their correspondent one specified using our DSL. Table \ref{table:comparacao} presents a sample of the collected data. The first column contains the \shc code, the second column contains the number of lines of code to represent the \shc using our DSL, and the third column contains the number of lines of code to represent the same rule in the Java language.
+
 \begin{table}[htb!]
 	\centering
 	\caption{Comparing the number of lines of code need to specify test cases using our DSL and Java}
 	\label{table:comparacao}
 	\begin{center}
-		\begin{tabular}{ccc}
+		\begin{tabular}{ccccc}
 			\toprule
-			\textbf{\shc Code} & \textbf{Lines of Code (DSL)} & \textbf{Lines of Code (Java)}     \\ \midrule
-			1        & 10  & 26   \\ % \hline
-			2        & 10  & 25   \\ % \hline
-			3        & 10  & 32   \\ % \hline
-			4        & 11  & 52   \\ % \hline
-			5        & 15  & 41   \\ % \hline
-			6        & 9   & 16   \\ % \hline
-			7        & 18  & 21   \\ % \hline
-			8        & 12  & 25   \\ % \hline
-			15       & 7   & 45   \\ % \hline
-			58       & 7   & 58   \\ % \hline
-			59       & 17  & 34   \\ \bottomrule
+			\textbf{\shc Code} & \textbf{DSL} & \textbf{Java} & \textbf{Difference} & \textbf{\%}   \\ \midrule
+1                 & 10           & 26            & 16                 & 62                      \\ 
+2                 & 10           & 25            & 15                 & 60                      \\ 
+3                 & 10           & 32            & 22                 & 69                      \\ 
+4                 & 11           & 52            & 41                 & 79                      \\ 
+5                 & 15           & 41            & 26                 & 64                      \\ 
+6                 & 9            & 16            & 7                  & 44                      \\ 
+7                 & 18           & 21            & 3                  & 15                      \\ 
+8                 & 12           & 25            & 13                 & 52                      \\ 
+9                 & 9            & 11            & 2                  & 19                      \\ 
+10                & 11           & 23            & 12                 & 53                      \\ 
+122               & 10           & 48            & 38                 & 80                      \\ 
+123               & 8            & 44            & 36                 & 82                      \\ 
+124               & 10           & 54            & 44                 & 82                      \\ 
+125               & 8            & 39            & 31                 & 80                      \\ 
+126               & 12           & 47            & 35                 & 75                      \\ 
+127               & 9            & 43            & 34                 & 80                      \\ 
+128               & 9            & 39            & 30                 & 77                      \\ 
+129               & 9            & 27            & 18                 & 67                      \\ 
+130               & 12           & 25            & 13                 & 52                      \\ 
+131               & 12           & 45            & 33                 & 74                      \\ \bottomrule
 		\end{tabular}
 	\end{center}
 \end{table}
 
-We use as a benchmark 66 \callers declared in its database. These \callers correspond to real rules used by the Brazilian Army to perform some tests related to the generation of QDMs. We converted each \shc written using JUnit to their correspondent one specified using our DSL. Table \ref{table:comparacao} presents a sample of the collected data. The first column contains the \shc code, the second column contains the number of lines of code to represent the \shc using our DSL, and the third column contains the number of lines of code to represent the same rule in the Java language.
+Regarding the runtime metrics, we collected the data using an Intel(R) Core{TM} i7-4790 processor, with 16GB of RAM, running Ubuntu 16.04.4 LTS 64-bit operating system, with 4.15.0-24-generic kernel. We used 16 QCs, chosen to represent the various OM types, natures, and sub-natures. For each QC, we generated QDMs using random sets of \callers with size: 20, 40, 50, 60, 100, 200, 400, 700, 1000, 1500, 2000. Since there were only \textcolor{red}{66} real \callers already declared, larger quantities contain repeated \callers (which in the end will duplicate the data within a given QDM). The selection of \callers was performed at random, but with the same seed, so that the same sets were used in the generation of QDMs for different QCs. Table \ref{table:tempo} shows a sample of the results obtained with the execution. The first column contains the QC code, and the second column contains the time in milliseconds for the generation of the QDMs using the indicated amount of \callers on the respective column header.
 
-Regarding the runtime metrics, we collected the data using an Intel(R) Core{TM} i7-4790 processor, with 16GB of RAM, running Ubuntu 16.04.4 LTS 64-bit operating system, with 4.15.0-24-generic kernel. We used 16 QCs, chosen to represent the various OM types, natures, and sub-natures. For each QC, we generated QDMs using random sets of \callers with size: 20, 40, 50, 60, 100, 200, 400, 700, 1000, 1500, 2000. Since there were only 66 real \callers already declared, larger quantities contain repeated \callers (which in the end will duplicate the data within a given QDM). The selection of \callers was performed at random, but with the same seed, so that the same sets were used in the generation of QDMs for different QCs. Table \ref{table:tempo} shows a sample of the results obtained with the execution. The first column contains the QC code, and the second column contains the time in milliseconds for the generation of the QDMs using the indicated amount of \callers on the respective column header.
+\textcolor{red}{pegar tempos da dissertacao, incluir AMAN}
 
 \begin{table}[htb!]
 	\centering
@@ -860,31 +893,32 @@ Regarding the runtime metrics, we collected the data using an Intel(R) Core{TM} 
 	\end{center}
 \end{table}
 
-We exported the collected data to the CSV format, so that we could perform a data analysis using the R environment~\cite{crawley2013}. In the data analysis for \textbf{RQ.2}, which compares the number of lines of code between the two distinct approaches for representing \callers, we created two additional columns: \emph{difference}, which measures the difference in the number of lines of code necessary to specify \callers using Java and our DSL; and \emph{percent of reduction}, which indicates 
-how much less code is necessary to specify a \shc using our DSL, when compared to the direct specification in Java code.
+We exported the collected data to the CSV format, so that we could perform a data analysis using the R environment~\cite{crawley2013}. In the data analysis for \textbf{RQ.2}, which compares the number of lines of code between the two distinct approaches for representing \callers, we created two additional columns: \emph{difference}, which measures the difference in the number of lines of code necessary to specify \callers using Java and our DSL; and \emph{percent of reduction}, which indicates how much less code is necessary to specify a \shc using our DSL, when compared to the direct specification in Java code.
 
 \begin{table}[htb!]
 	\centering
 	\caption{Analysis of DSL and Java comparison data}
 	\label{table:analiseComparacao}
 	\begin{center}
-		\begin{tabular}{llllll}
+		\begin{tabular}{lrrrrr}
 			\toprule
 			& \textbf{Min.}  & \textbf{Median} & \textbf{Mean}  & \textbf{SD}    & \textbf{Max.}  \\ \midrule
-			DSL        & 7.00  & 9.00   & 9.67  & 2.81  & 18.00 \\ % \hline
-			Java       & 9.00  & 17.50  & 21.76 & 14.68 & 96.00 \\ % \hline
-			Difference & 2.00  & 7.00   & 12.09 & 13.94 & 83.00 \\ % \hline
-			\%         & 14.29 & 43.75  & 45.23 & 19.84 & 87.93 \\ \bottomrule
+DSL         & 7.00  & 9.00   & 9.67  & 2.01  & 18.00  \\ 
+Java        & 9.00  & 23.00  & 28.66 & 18.47 & 130.00 \\ 
+Difference  & 2.00  & 13.00  & 18.98 & 18.25 & 121.00 \\ 
+\%	        & 14.29 & 56.26  & 54.66 & 21.68 & 93.08  \\ \bottomrule
 		\end{tabular}
 	\end{center}
 \end{table}
 
 Table \ref{table:analiseComparacao} presents some descriptive statistics of the collected data, containing the following columns: minimum value, median, mean, standard deviation, and maximum value. There is a strong correlation (0.982) between the lines of code in Java and the \emph{difference} measurements. This correlation can be seen in Figure \ref{fig:correlacao}. It is possible to identify that as the size of the Java code grows, the difference for the representation in DSL also increases.
 
+\textcolor{red}{regerar figuras em ingles}
+
 \begin{figure}[htb!] 
 	\centering
-	\includegraphics[width=.40\textwidth]
-	{img/artigo_correlacao.jpg}
+	\includegraphics[width=.45\textwidth]
+	{img/artigo_correlacao.png}
 	\caption{\it Correlation between Java and Difference}
 	\label{fig:correlacao}
 \end{figure}
@@ -892,7 +926,7 @@ Table \ref{table:analiseComparacao} presents some descriptive statistics of the 
 Figure \ref{fig:geracao} shows the time necessary to generate QDMs for 5 different QCs. For each of them, 6 QMS were generated, with different amounts of \callers, 60, 100, 400, 700, 1000 and 2000.
 
 \begin{figure}[!ht] \centering
-	\includegraphics[width=.40\textwidth]
+	\includegraphics[width=.45\textwidth]
 	{img/artigo_geracao.jpg}
 	\caption{\it QDM Generation Time (ms)}
 	\label{fig:geracao}
