@@ -59,7 +59,7 @@
 \usepackage{booktabs} % For formal tables
 \usepackage{graphicx}
 \usepackage{xspace}
-
+\usepackage{enumerate}
 \usepackage{lstcustom}
 
 
@@ -152,6 +152,8 @@
 \newcommand{\callers}{\emph{high-level rules}\xspace}
 \newcommand{\shc}{HLR\xspace}
 \newcommand{\hlrdsl}{\textsc{HLRDsl}\xspace}
+
+
 
 \endlocaldefs
 
@@ -325,29 +327,8 @@ In this paper we present the main design and architectural decisions to build an
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Introduction 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section*{Introduction}\label{sec:Introduction}
-One of the logistics' phases to distribute equipment to an army force contemplates the \emph{distribution planning} of materials throughout military unities. This phase is known as \emph{material endowment}, and involves several steps, including the specification of 
-relevant materials, often independent of vendor; the definition of rules that link military materials and equipment's to organizational unities (e.g., departments, regiments, and military posts); the execution of the rules for deriving the materials originally intended for each \emph{abstract military unit}; and the designation of the materials that must be actually distributed to the \emph{concrete military organizations}, which may suffer variations due to the inclusion and suppression of positions for a particular organizational unit of an army force. In the context of this paper, the reader might consider the scenario of the Brazilian Army. 
 
-Decision support systems are essential in this domain, given the importance and complexity of the processes related to the allocation of military employment materials. In particular, the rules used to predict military materials and equipment are not trivial, and implementing these rules directly in the source code makes the systems difficult to understand and maintain. This problem mostly occurs because the number of conditions that need to be expressed is proportional to the complexity of the organizational structure and the number of materials. In the case of an entire army force, this number is noteworthy. In addition, a ``\emph{hard-coding}'' solution does not allow domain experts to trivially specify and test new derivation rules. For these reasons, it is preferably to implement these rules declaratively, using languages, tools, or libraries that support some sort of inference mechanism.
-
-Nevertheless, introducing either a logic language (e.g., Prolog or Datalog) or a specific library (such as Drools~\cite{browne2009}) in a complex enterprise system may lead to some type of \emph{architectural conflict}, particularly in environments whose whole ecosystem system is well established and based on a set of constraints related to both language and libraries usage. Furthermore, these solutions require a reasonable learning curve, which can hamper software maintenance activities.
-
-This article describes the main design and architectural decisions adopted to implement the mechanisms that assist decision makers to plan the distribution of military materials and equipment across the organizational structure of the Brazilian Army. These decisions aim to both (a) abstract the adoption of a business rule engine using {\bf meta-programming} and (b) allow domain experts to simulate the definition and testing of rules using a {\bf domain specific language}. Accordingly, this paper presents the following contributions:
-
-\begin{itemize}
-	\item A description of the use of generative programming techniques to raise the abstraction level 	related to the adoption of a logic programming language in the specification of rules for the 	distribution of materials and equipment through organizational unities.
-	\item A report of an empirical evaluation of our design and architectural decisions, reinforcing that they fulfill not only the needs of the domain specialists, but also existing technical constraints. 	
-\end{itemize} 
-
-Although we discuss the distribution of materials and equipment for the military domain (which is far from trivial), we believe that the architectural decisions discussed here can be exploited to other logistics and endorsements scenarios in which it is also desirable to transparently introduce the support for rule based engines in enterprise systems.
-
-We organized this article as follows. Section \ref{sec:logistics} presents the concepts related to the domain of material logistics. Section~\ref{sec:rbs} presents the concepts related to business rules and rule based engines and Section~\ref{sec:gp} presents some 
-background information related to \emph{generative programming}---techniques that we use to support the design and implementation of our approach. Section~\ref{sec:architecture} presents the main design and architectural decisions we take to develop the mechanism responsible for the distribution of materials. In Section~\ref{sec:case_study} we present the results of an empirical study that validate our approach. Finally, Section~\ref{sec:related} and Section~\ref{sec:conclusao} relate our work with the exising literature and present some final remarks. 
-
-
-
-
+\input{introduction}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
