@@ -1,0 +1,145 @@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Military Logistics Systems
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Military Logistic Domain}
+\label{sec:logistics}
+
+Military Logistics is the method used to implement military strategies and tactics that aim to gain competitive advantage~\cite{rutner2012}. Logistics is defined as the art of moving armies, as well as accommodating and supplying the military~\cite{prebilic2006}. Strategy and tactics provide the framework for conducting military operations, while logistics provides the means. In the context of this paper, we are more interested in the supplying aspects of logistics, which refers to the set of activities that deals with the  provisioning of the material of different classes (including vehicles, armaments, munition, uniform, and fuel) necessary to the military unities (including a rich organizational structure and a significant number of militaries). 
+
+In order to facilitate the administration and control of materials and equipment, the Brazilian Army uses a catalog system that is similar to one defined by the North Atlantic Treaty Organization (OTAN)~\cite{otan2012}, which classifies items into groups and classes. The Brazilian Army catalog uses a classification that considers the \emph{type}, \emph{class}, and \emph{family} of the materials, ignoring some details (such as specific brands and suppliers). Other areas of the logistic
+domain consider more detailed information of the equipament. Several rules govern the identification of materials and equipment, to avoid duplication and simplify the process of decision making. A logistic system is the integrated set of organizations, personnel, principles, and technical standards intended to provide the adequate flow for supplying materials~\cite{brasil2003}. This is a complex system, and thus it must be designed as a set of modules. 
+
+In this paper we present the main design and architectural decisions related to one of the modules (SISDOT) of the \emph{Integrated Logistics System} (SIGELOG) of the Brazilian Army. SISDOT deals with the identification of the necessary materials and equipment (hereafter MEMs) for the organizational unities of the Brazilian Army. Each organizational unity is a combination of a set of \emph{generic organizations of specific types}, which describe the expected number of military unities of an organization (including armies, divisions, brigades, and so on). The goal of SISDOT is twofold. It first estimates the set of MEMs that should be assigned to the generic organizations, producing one of its main products (named QDM). Based on a set of QDMs, the second SISDOT's goal is to derive another estimate of MEMs that should be assigned to the concrete organizational unities (a QDMP). 
+
+Before generating a QDM, it is necessary to catalog all relevant MEMs to a given class of materials and then specify \callers (HLRs) that relate MEMs to the generic organizational unities, considering different elements of the structure---from the type of the unity and sub-unities to the qualifications of a soldier. That is, it is possible to elaborate a \shc that states that a military ambulance should be assigned to all \emph{drivers within medical unities}. Differently, it is also possible to state that an automatic rifle will be assigned to all \emph{sergeant that has been qualified as a shooter}. There is some degree of flexibility for writing these rules, that might be from two different kinds: rules that consider the entire structure of the Brazilian Army and rules that refer to specific elements of the organizational structure. The former details rules that are more specific for a set of military qualifications. The second allows the generation of rules that might be reused through different unities. 
+
+Deriving QDMs and QDMPs is not trivial and its complexity is due to several factors, including the organizational structure of the Brazilian Army, the number of existing functions and qualifications that must be considered, and the reasonable number of MEMs. The process might also vary depending on the class of the materials. Moreover, it is possible to specify the \callers in different ways, which might interact to each other leading to undesired results (e.g., the same material being assigned several times to a given soldier). 
+
+\section{SIGELOG Architectural Constraints}
+
+Due to the number of logical decisions, using an imperative language to implement the process of QDM generation 
+is not an interesting choice. However, the SIGELOG architecture reinforces the use of Java Enterprise Edition platform---so we had little flexibility to introduce a more suitable language (such as Prolog) to generate QDMs. Other constraints guided the architectural decisions of SISDOT, including:  
+
+\begin{itemize}
+	\item Maintenance: the set of languages and libraries are limited to those already used in the SIGELOG development.  
+	\item Performance: considering a total of 1000 \callers, the system must be able to generate a QDM in less than 10 seconds.
+	\item Testing: the technical decisions must not compromise the testability of the system, being expected a high degree of automated tests. 
+\end{itemize}
+
+To deal with the first constraint, we decided to use a meta-programming approach that derives \emph{low-level rules} for Drools (a rule based engine for Java) \emph{on the fly}, from a set of \callers represented as domain objects that must exist in a database. In this way, it is not necessary to understand the language used to specify rules in Drools.
+
+To this end, we generate all low-level rules every time a QDM is built.
+Although this approach increases flexibility and allows us to externalize the \emph{low-level rules}, we realized some undesired effect on the performance of the system. Accordingly, to deal with the second constraint, we use a cache mechanism and, based on the results of performance tests (as we discuss in Section~\ref{sec:case_study}), we have evidences that we are able to generate QDMs within the time
+limit constraints. For the third constraint, we implemented a DSL that simplifies the specification and execution of test cases using a property based approach. 
+
+
+\section{Technical Background}
+
+
+In this section we
+introduce some technical background related to \emph{Rule Based Systems} and
+\emph{Drools}, \emph{Generative Programming} (including \emph{Metaprogramming},
+\emph{Template Engines}, and \emph{Domain Specific Languages}), and
+\emph{Property Based Testing}. This background might help the reader to
+understand the design and architectural decisions we take
+while implementing SISDOT.  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Rule Based Systems
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Rule Based Systems}
+\label{sec:rbs}
+The process for deriving QDMs consists of applying a set of business rules that relates MEMs to the organizational structure of the Brazilian Army. In this paper, we named this set of business rules as \callers. A business rule is a compact, atomic, and well-formed statement about an aspect of the business that can be expressed in terms that may be directly related to the business and its employees using a simple and unambiguous language that might be accessible to all stakeholders~\cite{graham2007business}. This type of structure is relevant for the organizations, as they continuously need to deal with complex scenarios. These scenarios consist of a large number of individual decisions, working together to provide a complex assessment of the organization as a whole \cite{salatino2016mastering}.
+
+Rule Based Systems (RBS), also known as production systems or expert systems, are the simplest form of artificial intelligence that help to design solutions that reason about and take actions from business rules (a feature that is interesting in the context of SISDOT), using rules such as knowledge representation~\cite{grosan2011}. Instead of representing knowledge in a declarative and static way as a set of things that are \emph{true}, RBS represent knowledge in terms of a set of rules that tells what to do or what to accomplish in different situations~\cite{grosan2011}. RBS consist of two basic elements: a \emph{knowledge base} to store knowledge and an \emph{inference engine} that implements  algorithms to manipulate the knowledge represented in the knowledge base~\cite{grosan2011,DBLP:books/daglib/0070547,gallacher1989}. The knowledge base stores facts and rules~\cite{DBLP:journals/cacm/Hayes-Roth85}. A fact is a static statement about properties, relations, or propositions~\cite{DBLP:journals/cacm/Hayes-Roth85} and should be something relevant to the initial state of the system~\cite{grosan2011}. A rule is a conditional statement that links certain conditions to actions or results \cite{abraham2005}, being able to express policies, preferences, and constraints. Rules can be used to express deductive knowledge, such as logical relationships, and thus support inference, verification, or evaluation tasks~\cite{DBLP:journals/cacm/Hayes-Roth85}.
+
+A rule ``if-then'' takes a form like \emph{``if x is A then take a set of actions''}. The conditional part is known as antecedent, premise, condition, or left-hand-side (LHS). The other part is known as consequent, conclusion, action, or right-hand-side (RHS)~\cite{grosan2011,abraham2005}. Rule-based systems works as follows~\cite{grosan2011}: it starts with a knowledge base, which contains all appropriate knowledge coded using ``if-then'' rules, and a working memory, which contains all data, assertions, and information initially known. 
+
+The system examines all rule conditions (LHS) and determines a subset of rules whose conditions are satisfied, based on the data available at the working memory. From this information set, some of the rules are triggered. The choice of rules is based on a conflict resolution strategy. When the rule is triggered, all actions specified in its \texttt{then} clause (RHS) are executed. These actions can modify the working memory, the rule base itself, or take whatever action that the system programmer decides to implement. This \emph{trigger rule loop} continues until a termination criterion is met. This end criterion can be given by the fact that there is not any additional rule whose conditions are satisfied or a rule is triggered whose action specifies that the program should be finished.
+
+Drools is an example of a business logic integration platform (BLiP) written in the Java programming language and that fits some requirements of SISDOT (in particular, its integration with Java and the Wildfly application server). We use Drools as the \emph{rule-based system} in the QDM generation. However, to abstract the use of a RBS, we generate the Drools rules using a meta-programming approach, a specific technique for \emph{generative programming}. 
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Generative Programming
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Generative Programming}
+\label{sec:gp}
+
+Generative Programming (GP) is related to the design and implementation of software components that can be combined to generate specialized and highly optimized systems, fulfilling specific requirements~\cite{DBLP:phd/dnb/Czarnecki99}. With this approach, instead of developing solutions from scratch, domain-specific solutions are generated from reusable software components \cite{arora2009}. GP is applied on the manufacturing of software products from components in a system in an automated way (and within economic constraints), i.e., using an approach that is similar to that found in industries that have been producing mechanical, electronic, and other goods for decades \cite{barth2002}. The main idea in GP is similar to the one that led people to switch from Assembly languages to high-level languages. 
+
+In our context, we use GP to deal with two different aspects of SISDOT. First, we raise the level of abstraction by automatically generating low-level Drools rules from an existing set of \callers (previously defined by the domain experts). This is a \emph{meta-programming} approach based on template engines---we use a template to generate a set of facts and rules (which are the fundamental mechanisms of logic programming) from domain objects. We also raise the level of abstraction to assist developers in the specification and execution of test cases, using a domain specific language and a set of custom libraries and tools.  
+
+
+\subsubsection{Metaprogramming and Template Engines}
+
+Metaprogramming concerns to the implementation of programs that generate other programs. In the context of SISDOT, we use a metaprogramming technique to generate programs that are interpreted by Drools. The main goal is to abstract the use of a specific language for implementing the \emph{low-level rules} used to generate QDMs. There are many different approaches for metaprogramming, including preprocessing, source to source transformations, and template engines. A template engine is a generic tool for generating textual output from templates and data files. They can be used in the development of software that requires the automatic generation of code according to specific purposes~\cite{benato2017}. 
+
+The need for dynamically generated web pages has led to the development of numerous template engines in an effort to make web application development easier, improve flexibility, reduce maintenance costs, and enable parallel encoding and development using HTML like languages. In addition to being widely used in dynamic web page generation, templates are used in other tasks, being one of the main techniques to generate source code from high level specifications. More recently, languages such as Clojure, Ruby, Scala, and Haskell adopted the use of template and \emph{quasiquote} mechanisms as a strategy for code reuse and program generation (some of them considering type systems). A template is a text document that combines placeholders and linguistic formulas used to describe something in a specific domain~\cite{segura2017}. 
+
+In this work we use the FreeMarker template engine, which is an open-source software designed to generate text from templates~\cite{radjenovic2009}. FreeMarker was chosen for several reasons, such as: it follows a general purpose model; it is faster than other template engines; it supports shared variables and model loaders; and it is possible to load FreeMarker templates at runtime, without the need to (re)compile the application~\cite{benato2017,parr2006}.
+
+
+\subsubsection{Domain Specific Languages}
+
+A language is a set of valid sentences, serving as a mechanism for expressing intentions \cite{parr2010}. Creating a new language is a time-consuming task, requires experience, and is usually performed by engineers specialized in languages construction~\cite{karsai2014}. To implement a language, one must construct an application that reads sentences and reacts appropriately to the phrases and input symbols it discovers. However, the need for new languages for many growing domains is increasing, as well as the emergence of more sophisticated tools that allow software engineers to define a new language with acceptable effort. As a result, a growing number of DSLs are being developed to increase developer productivity within specific domains~\cite{karsai2014}. 
+
+
+Domain Specific Languages (DSL) are specification languages or programming languages with high level of abstraction, simple and concise \cite{raja2010}, focused on specific domains, and are designed to facilitate the construction of applications, usually declaratively, with limited expressiveness lines of code, which solve these specific problems \cite{neeraj2017}. A DSL is a computer language of limited expressiveness, through appropriate notations and abstractions, focused and generally restricted to a specific problem domain \cite{fowler2013,vanDeursen2000}. DSLs have the potential to reduce the complexity of software development by increasing the level of abstraction for a domain. According to the application domain, different notations (textual, graphical, tabular) are used \cite{pfeiffer2008}.
+
+
+In this work we used Xtext ~\cite{eysholdt2010} (a language workbench) to implement a DSL that helps developers to specify and execute test cases related to the process of QDM generation. The main rationale to building this DSL was the significant costs related to specifying \callers (particularly during acceptance testing).
+Our DSL integrates with a \emph{property based testing} insfrastructure that
+is able to generate different configurations of \emph{military unities}. We use
+this infrastructure to increase our confidence about the generation process of
+QDMs and support regression testing.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Software Testing
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Property Based Software Testing}
+\label{sec:test}
+
+%% Controle e garantia de qualidade são atividades essenciais para qualquer empresa que produza produtos para serem usados por outros usuários. Nos primórdios da computação a qualidade era de responsabilidade exclusiva do programador. Padrões para garantia da qualidade de software foram introduzidos no contexto do desenvolvimento de software de contrato militar durante a década de 1970 e se espalharam rapidamente no desenvolvimento de software no contexto comercial \cite{pressman2005software}.
+
+%% O Software Engineering Body of Knowledge (SWEBOK) \cite{bourqueguide} constitui o primeiro consenso internacional desenvolvido sobre o conhecimento fundamental exigido por todos os engenheiros de \textit{software}, tornando-se um guia de uso e aplicação das melhores práticas de Engenharia de \textit{Software}, de maneira sensata e razoável. O SWEBOK é organizado em 10 áreas de conhecimento (Knowledge Areas - KA) e um tópico referente às disciplinas relacionadas com a Engenharia de \textit{Software}. A KA de Qualidade de \textit{Software} abrange as técnicas estáticas, aquelas que não requerem a execução do \textit{software} sendo avaliado, enquanto técnicas dinâmicas são cobertas na KA Teste de \textit{Software}.
+
+%% A KA Teste de \textit{Software} consiste na verificação dinâmica do comportamento de um programa com um conjunto finito de casos de testes, selecionados de um domínio geralmente infinito de execuções, para confirmar o comportamento especificado esperado. Os processos de verificação e validação determinam se os produtos de desenvolvimento de uma determinada atividade estão em conformidade com os requisitos dessa atividade e se o produto satisfaz seu uso pretendido e as necessidades do usuário. A verificação é uma tentativa de garantir que o produto seja construído corretamente, no sentido de que os produtos de saída de uma atividade atendam às especificações impostas a eles em atividades anteriores. A validação é uma tentativa de garantir que o produto seja construído corretamente, ou seja, o produto atenda ao seu propósito específico \cite{bourqueguide}. Teste de \textit{software} é uma das atividades de verificação e validação. Existem outros métodos para garantir a qualidade, como verificação baseada em modelo ou prova de teorema, mas a maioria dos desenvolvedores preferem o teste porque é mais simples conceitualmente e mais fácil de implantar \cite{yatoh2014}.
+
+%% A motivação do teste de \textit{software} é afirmar a qualidade do \textit{software} com métodos que possam ser aplicados de maneira econômica e eficaz tanto em larga escala como em pequena escala \cite{pressman2005software}. O teste de \textit{software} é uma área muito ampla, que envolve muitas outras áreas técnicas e não técnicas, como especificação, design e implementação, manutenção, processos e gerenciamento de problemas em engenharia de \textit{software} \cite{luo2001}. 
+
+%% O teste destina-se a mostrar que um programa faz o que se pretende fazer e descobrir defeitos do programa antes de ser colocado em uso \cite{sommerville2011software}. Porém, é importante citar uma frase de Edsger W. Dijkstra \cite{dijkstra1972}: "testes de programas podem ser usados para mostrar a presença de \textit{bugs}, mas nunca para mostrar sua ausência!". Embora essa frase indique um limite da utilidade dos testes, também indica uma das propriedades mais úteis dos testes: encontrar \textit{bugs} \cite{yenigun2016}.
+
+%% Elberzhager et al.~\cite{elberzhager2012} descreve algumas abordagens
+%% para reduzir o esforço de teste sem que o \textit{software}
+%% final perca qualidade. De acordo com a maioria dos artigos analisados,
+%% cerca de 50\% discute a import\^{a}ncia da automação de testes.
+%% Este resultado não é surpreendente, uma vez que ao aplicar abordagens
+%% de automação de teste, o tempo gasto com os testes podem ser diminuídos,
+%% reduzindo o custo do teste de \textit{software}~\cite{mahadik2016}.
+%% A automação permite mais ciclos de teste devido a testes repetitíveis
+%% e execuções de teste mais frequentes. Também facilita a verificação
+%% rápida e eficiente de mudanças de requisitos e correções
+%% de erros e minimiza os erros humanos \cite{xu2015}, \cite{mahadik2016}.
+
+%% Na literatura são descritas diversas técnicas para geração de casos de testes e dados para testes, como: técnicas de geração aleatória de dados de teste, que escolhem entradas arbitrariamente até que entradas úteis sejam encontradas. Técnicas de geração de dados de teste simbólico, que criam expressões algébricas para várias restrições no programa, atribuindo valores simbólicos à variável. A execução simbólica para geração automática de testes possui dois tipos de grupos: geração de teste estático, feita sem executar o programa; e técnica de geração dinâmica, que determina quais casos de teste atendem ao requisito durante a execução do programa. Existe também a técnica de geração automática de testes baseada em busca, onde o domínio de entrada do sistema sendo testado é usado como espaço de pesquisa e são selecionados os dados que atendem ao objetivo da geração. O processo para encontrar a melhor solução possível entre todas as disponíveis é conhecido como otimização. Esta técnica de geração de testes pode utilizar diversos algoritmos, como: subida de encosta, algoritmos genéticos (GA), Ant Colony Optimization (ACO), Bee Colony Algorithm (BCA), Harmony Search (HS), Particle Swarm Optimization (PSO), programação dinâmica, entre outros algoritmos utilizados para solucionar problemas de busca, que geralmente utilizam heurísticas \cite{hooda2014}, \cite{mahadik2016}, \cite{elghondakly2016}, \cite{ali2010}, \cite{harman2010}, \cite{sahoo2016}, \cite{khurana2017}.
+
+Conforme discutido anteriormente, o uso de uma infraestrturua baseda em Property-based Testing (PBT) consiste em outra decisão arquitetural relevante para o
+SISDOT. PBT tornou-se uma técnica padrão para melhorar a qualidade do \textit{software} em uma ampla variedade de linguagens de programação \cite{lampropoulos2017}. PBT é uma técnica de teste de caixa-preta, semi-automática, de alto nível na qual, ao invés de escrever um conjunto rico testes de unidade manualmente, o testador especifica propriedades gerais que o sistema sob teste (System Under Testing - SUT) deve satisfazer. A partir dessas propriedades, geradores de dados produzem entradas aleatórias bem distribuídas para as partes do sistema que serão testadas. As propriedades são então verificadas a partir de um conjunto mais rico de entradas, que dificilmente seria explorado manualmente. Como em todas as técnicas de testes aleatórios, a chance de encontrar um erro e a confiança no SUT aumentam com o número de testes gerados \cite{loscher2018}. 
+
+PBT é uma técnica que está recebendo muita atenção recentemente, é fortemente relacionada a testes baseados em modelos, mas onde o foco está na geração de testes individuais automaticamente a partir de especificações na forma de testes de propriedades de alto nível \cite{earle2014}. PBT é uma estratégia que leva a uma família de ferramentas de teste automáticas. Geralmente, são ferramentas para geração e execução de casos de teste com base nas especificações. Essas ferramentas são tipicamente implementadas como bibliotecas, permitindo que o desenvolvedor / testador anote as especificações do programa, usando uma linguagem de programação de sua escolha, na forma de propriedades que devem ser satisfeitas. A partir dessas especificações, as ferramentas geram, executam e verificam automaticamente os resultados de um grande número de casos de teste aleatórios para verificar se as propriedades são mantidas \cite{castro2015}. Existe uma variedade de ferramentas PBT que surgiram ao longo dos anos inspiradas no QuickCheck original para Haskell \cite{claessen2000}, como: JUnit-QuickCheck para Java, theft para C, ScalaTest and ScalaCheck para Scala \cite{chepurnoy2018}. 
+
+Ao contrário dos métodos de teste convencionais, em que o comportamento de um programa é testado apenas em alguns casos pré-determinados, o PBT enfatiza a definição de propriedades e, em seguida, testa sua validade em relação a pontos de dados amostrados aleatoriamente. Como o teste baseado em propriedade (PBT) usa um pequeno número de pontos de dados amostrados aleatoriamente, ele ainda fornece apenas uma resposta aproximada à questão de saber se uma propriedade é satisfeita em todos os pontos de dados. No entanto, pode fornecer mais confiança do que o teste unitário convencional, porque os pontos de dados amostrados aleatoriamente podem cobrir casos problemáticos que não foram previstos pelos desenvolvedores \cite{chepurnoy2018}.
+
+PBT apresenta três vantagens sobre o teste manual \cite{yatoh2014}. Primeiro, escrevendo apenas propriedades e omitindo dados de teste, os desenvolvedores podem reduzir significativamente o tamanho e complexidade do código de teste. Segundo, ao executar testes baseados em propriedade contra entradas geradas aleatoriamente, os desenvolvedores podem encontrar mais \textit{bugs} do que testes manuais, pois os testes baseados em propriedade podem verificar propriedades com muitas entradas, com isso, a chance de encontrar \textit{bugs} é aumentada. Finalmente, as propriedades podem ser vistas como uma especificação formal leve do programa. Escrever especificações formais promove o entendimento da especificação e da implementação e é eficaz para compartilhar as especificações entre a equipe. É importante que essa especificação seja executável. Essa especificação executável pode evitar incompatibilidade entre especificação e implementação, o que geralmente é o caso se a especificação for gravada em um documento separado.
+
+{\color{red}Pedro, acho que aqui valeria a pena discutir que
+  foram investigadas bibliotecas existentes para uso no SISDOT. Por outro
+  lado, alguma caracteristica particular do sistema fez com que uma
+  solucao especifica tivesse que ser implementada.}
+
+{\color{red}In the next section we present more details about our architectural decisions and implementation of our metaprogramming and DSL approach, which deals with the generation and test of QDMs.}
+
