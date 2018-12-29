@@ -229,7 +229,7 @@
    addressref={aff1},
    corref={aff1},
    email={ednacanedo@unb.br}
-]{\inits{ED}\fnm{Edna D} \snm{Canedo}}
+]{\inits{ED}\fnm{Edna Dias} \snm{Canedo}}
 \author[
 	addressref={aff1},
 	corref={aff1},
@@ -355,6 +355,7 @@ In this paper we present the main design and architectural decisions to build an
 \input{introduction}
 \input{background}
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Architectural Decisions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -470,6 +471,7 @@ After generating a QDM domain object, it is saved on the database and we let the
 %% A Domain Specific Language for testing QDM Generation
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{A Domain Specific Language for testing QDM Generation}
+
 As explained before, to generate a QDM, a set of \callers must be previously declared. This is a time-consuming task, particularly when using the interface of the system. In order to facilitate the definition of the \callers used in the automated test scripts, we decided to implement \hlrdsl---a DSL (Domain Specific Language) that enables us to specify \callers in a clear, objective, and declarative way (and most important, without using the interface of the SISDOT system). 
 
 We implemented \hlrdsl  using Xtext, which generates plugins that allow code editing in both Eclipse and IntelliJ, plus an editor that can be embedded in a web application. This way, a developer writing test scripts might use \hlrdsl to take advantages of the functionality provided by these plugins. To implement a DSL using Xtext, it is first necessary to declare a grammar expressed using a syntax similar to ANTLR~\cite{parr2013}. Listing~\ref{code:gramatica} presents the grammar of our DSL. From this grammar,the Xtext tool suite generates a lexer, a parser, a set of classes representing the AST (Abstract Syntax Tree), and an editor with several features typically available in IDEs.
@@ -674,7 +676,6 @@ After running the plugin, with the generated code, the tests are executed in a s
 %% Empirical Study
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Empirical Study}
-
 \label{sec:case_study} 
 For the validation of the proposed architecture we conducted an empirical study, which consists of the evaluation of the main architectural decisions of SISDOT, which relate to the generation of QDMs. The case study aims to answer the following research questions:
 
@@ -693,8 +694,7 @@ For the validation of the proposed architecture we conducted an empirical study,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Data Collection and Analysis Procedures}
 
-We answer our first question qualitatively using the focus group method. Although this might look like disappointing (under the perspective of more formal methods), we have strong evidences collected from the domain experts that our approach has produced correct QDMs. We believe that this correctness is due to several factors, including the involvement of the domain experts that helped us to full understand the requirements and the expertise of our development team. Nevertheless, the decision of not writing the low-level rules at the source code level, but instead using a program generation approach that has reduced significantly the effort needed to \emph{hand write} 
-those rules, has also contributed to achieve this confidence about correctness. 
+We answer our first question qualitatively using the focus group method. Although this might look like disappointing (under the perspective of more formal methods), we have strong evidences collected from the domain experts that our approach has produced correct QDMs. We believe that this correctness is due to several factors, including the involvement of the domain experts that helped us to full understand the requirements and the expertise of our development team. Nevertheless, the decision of not writing the low-level rules at the source code level, but instead using a program generation approach that has reduced significantly the effort needed to \emph{hand write} those rules, has also contributed to achieve this confidence about correctness. 
 
 We use a quantitative approach to answer the other two research questions.
 To this end, we collected two metrics: lines of code (LOC) and execution time. The choice of these two metrics is related to the size of the code, which may indicate higher productivity; and to the fulfillment of the functional requirement that determines the maximum execution time for QDM generation. 
@@ -737,7 +737,6 @@ O grupo focal foi conduzido e gerenciado por dois participantes do projeto, o re
 Analysis. The focus group session result was documented in the note used during the session and in the audio recording used during the session. Todos os participantes relataram terem executado a funcionalidade de geração de QDMs diversas vezes.
 \emph{Foi reportado que em nenhuma das execuções levou a uma inconsistência}. Além disso, durante a execução do grupo focal o Major responsável pela 4ª Chefia fez questão de gerar um QDM e nos mostrar como era feita a verificação de conformidade, que segue uma estratégia em pares. Tal Major solicitou ao outro participante para verificar no quadro de cargos qual o quantitativo da OM verificada (AMAN), que é uma das OMs mais complexas em termos de cargos e de materiais necessários para que sejam realizadas as suas atividades militares. O quantitativo desejado e esperado de materiais foi devidamente registrado na geração do QDMs pelos chamadores utilizados para essa geração. Demonstrando assim a geração correta da funcionalidade.
 
-% O sorriso no rosto dos
 Os participantes evidenciaram que a funcionalidade estava sendo realizada corretamente e que a atividade manual que eles realizavam se tornou prática, rápida e confiável. No final da atividade foi feito um agradecimento por parte do responsável pela chefia, dizendo que n\~{a}o imaginava atingir tão rapidamente o grau de corretude na distribuição dos materiais para as OMs.
 
 \subsection{Results of the Quantitative Assessment} 
