@@ -348,7 +348,7 @@ In this paper we present the main design and architectural decisions to build an
 
 %%%%%%%%%%%%%%%%
 %% Background %%
-%%
+%%%%%%%%%%%%%%%%
 
 
 
@@ -653,7 +653,7 @@ Following the same line of combinations used for scenarios involving the nature 
 25               & 1              & 1                    & 0                 & 0               \\ \hline
 26               & 1              & 1                    & 0                 & 1               \\ \hline
 27               & 1              & 1                    & 1                 & 0               \\ \hline
-28               & 1              & 1                    & 1                 & 0               \\ \hline
+28               & 1              & 1                    & 1                 & 1               \\ \hline
 		\end{tabular}
 	\end{center}
 \end{table}
@@ -739,6 +739,8 @@ Foram utilizados 200 chamadores, sendo que 100 deles são do tipo ABAS (Estrutur
   explorar alguma coisa da abordagem PBT? Talvez, usando essa informacao,
   fosse possivel responder a primeira questao de pesquisa usando tanto uma
 abordagem qualitativa quanto uma abordagem quantitativa.}
+
+{\color{red}pedro: acho que cobertura não vale nesse caso. Mas sobre a abordagem PBT talvez possa falar das combinações da geração automática de testes. EX: QC tem 4 propriedades: tipoOM, natureza, subNatureza e valor ... foram cobertas boa parte das combinacoes: valor-tipoOM (2*2=4 e foram gerados os 4 testes para essas combinacoes); valor-subnatureza, natureza, tipoOM --> 2*4=16 e foram gerados os 16 testes cobrindo essas combinacoes ... OBS:. estou usando * para potencia pra nao dar erro na compilacao}
 
 \subsection{Results of the Qualitative Assessment}
 
@@ -878,8 +880,6 @@ Difference  & 2.00  & 13.00  & 18.98 & 18.25 & 121.00 \\
 
 Table \ref{table:analiseComparacao} presents some descriptive statistics of the collected data, containing the following columns: minimum value, median, mean, standard deviation, and maximum value. There is a strong correlation (0.982) between the lines of code in Java and the \emph{difference} measurements. This correlation can be seen in Figure \ref{fig:correlacao}. It is possible to identify that as the size of the Java code grows, the difference for the representation in DSL also increases.
 
-\textcolor{red}{regerar figuras em ingles}
-
 \begin{figure}[htb!] 
 	\centering
 	\includegraphics[width=.45\textwidth]
@@ -913,8 +913,7 @@ However, we found that testing the process of QDM generation was time consuming,
 
 Our empirical study presents several limitations. First, we discuss \emph{correctness} based on the results of both integration and acceptance tests, though also considering the opinion of the domain experts that are currently confident that our approach for QDM generation is working properly. Surely, we could have used a more formal approach for discussing correctness, and we postpone this investigation to a future work. Nevertheless, considering the scope of this paper, the feedback from the domain experts and testing outcomes reduce some of ours uncertainties about correctness. 
 
-Second, we only considered 66 real \callers in our study, which served as a basis for measuring the time to generate QDMs. SISDOT is expected to have around 1000 \callers in the production environment. To mitigate the threat related to the small number of available \callers for testing, we considered their repetition when carrying out a performance test of SISDOT. In this way, we expect that the system would present a behavior similar to the production environment (with respect to performance). The same situation occurs with the comparison of lines of code between the declarations of \callers in DSL and Java. As the number of \callers is relatively small, 
-it may not be possible to generalize the results we found.
+Second, we only considered 200 \textcolor{red}{real} \callers in our study, which served as a basis for measuring the time to generate QDMs. SISDOT is expected to have around 1000 \callers in the production environment. To mitigate the threat related to the small number of available \callers for testing, we considered their repetition when carrying out a performance test of SISDOT. In this way, we expect that the system would present a behavior similar to the production environment (with respect to performance). The same situation occurs with the comparison of lines of code between the declarations of \callers in DSL and Java. As the number of \callers is relatively small, it may not be possible to generalize the results we found.
 
 
 
