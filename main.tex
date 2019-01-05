@@ -804,7 +804,7 @@ Participants evidenced that functionality was being performed correctly and that
 
 Regarding the runtime metrics, we collected the data using an Intel(R) Core{TM} i7-4790 processor, with 16GB of RAM, running Ubuntu 16.04.4 LTS 64-bit operating system, with 4.15.0-24-generic kernel. We used 100 QCs, chosen to represent the various OM types, natures, and sub-natures. For each QC, we generated QDMs using random sets of \callers with size: 400, 700, 1000, 1500, 2000. Since there were only 200 \textcolor{red}{real} \callers already declared, larger quantities contain repeated \callers (which in the end will duplicate the data within a given QDM). The selection of \callers was performed at random, but with the same seed, so that the same sets were used in the generation of QDMs for different QCs. Table \ref{table:tempo} shows a sample of the results obtained with the execution. The first column contains the QC code, and the second column contains the time in milliseconds for the generation of the QDMs using the indicated amount of \callers on the respective column header.
 
-\textcolor{red}{pegar tempos da dissertacao, incluir AMAN ... não achei os dados ainda (tive q formatar o computador uns tempos atrás)}
+%AMAN=7006000
 
 \begin{table}[htb!]
 	\centering
@@ -834,6 +834,7 @@ Regarding the runtime metrics, we collected the data using an Intel(R) Core{TM} 
 1108400  & 2048      & 3458      & 4703       & 6727       & 9575       \\
 1112401  & 1880      & 3165      & 4837       & 6873       & 9270       \\
 5716900  & 1979      & 3423      & \textbf{4662} & 6504       & 9032       \\
+7006000  & 1948      & 3149      & 5003       & 6998       & 9326       \\
 7805004  & 1808      & 2979      & 4710       & 6915       & 9287       \\
 1470310  & 1861      & 3091      & 4711       & 6824       & 8996       \\
 739310   & 1962      & 3096      & 4722       & 6753       & 9032       \\
@@ -891,7 +892,7 @@ Figure \ref{fig:geracao} shows the time necessary to generate QDMs for 5 differe
 
 \begin{figure}[!ht] \centering
 	\includegraphics[width=.45\textwidth]
-	{img/artigo_geracao.jpg}
+	{img/artigo_geracao.png}
 	\caption{\it QDM Generation Time (ms)}
 	\label{fig:geracao}
 \end{figure}
