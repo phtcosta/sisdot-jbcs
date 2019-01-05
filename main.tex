@@ -698,6 +698,10 @@ That is, to use this architecture characteristic (here we consider testability a
 
 After running the plugin, with the generated code, the tests are executed in a similar way to the test definitions detailed before. The tests run along with the other unit tests declared, whether DSL-based or not.
 
+
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Empirical Study
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -724,8 +728,11 @@ We answer our first question qualitatively using the focus group method. Althoug
 
 We use a quantitative approach to answer the other two research questions.
 To this end, we collected two metrics: lines of code (LOC) and execution time. The choice of these two metrics is related to the size of the code, which may indicate higher productivity; and to the fulfillment of the functional requirement that determines the maximum execution time for QDM generation. 
-\textcolor{red}{arrumar: nao sao 66}
-In the quantitative assessment, we use as a benchmark 66 \callers. These \callers correspond to real rules used by the Brazilian Army to perform some tests related to the generation of QDMs. We converted each \shc written using JUnit to their correspondent one specified using our DSL.
+
+\textcolor{red}{arrumar: nao sao 66
+In the quantitative assessment, we use as a benchmark 200 \callers. These \callers correspond to real rules used by the Brazilian Army to perform some tests related to the generation of QDMs.} We converted each \shc written using JUnit to their correspondent one specified using our DSL.
+
+Foram utilizados 200 chamadores, sendo que 100 deles são do tipo ABAS (Estrutura Organizacional por Componentes) e correspondem a chamadores reais utilizados pelo Exército Brasileiro (EB), e serviram para a realização de alguns testes na geração de QDMs pela equipe de desenvolvimento. Foram gerados, de forma automática, 100 chamadores do tipo ÁRVORE (Estrutura Organizacional Completa), para que os dois tipos de chamadores fossem contemplados na realização dos testes.
 
 {\color{red}rbonifacio:
   seria possivel explorar algo como cobertura de codigo aqui? ou
@@ -795,29 +802,57 @@ Participants evidenced that functionality was being performed correctly and that
 	\end{center}
 \end{table}
 
-Regarding the runtime metrics, we collected the data using an Intel(R) Core{TM} i7-4790 processor, with 16GB of RAM, running Ubuntu 16.04.4 LTS 64-bit operating system, with 4.15.0-24-generic kernel. We used 16 QCs, chosen to represent the various OM types, natures, and sub-natures. For each QC, we generated QDMs using random sets of \callers with size: 20, 40, 50, 60, 100, 200, 400, 700, 1000, 1500, 2000. Since there were only \textcolor{red}{66} real \callers already declared, larger quantities contain repeated \callers (which in the end will duplicate the data within a given QDM). The selection of \callers was performed at random, but with the same seed, so that the same sets were used in the generation of QDMs for different QCs. Table \ref{table:tempo} shows a sample of the results obtained with the execution. The first column contains the QC code, and the second column contains the time in milliseconds for the generation of the QDMs using the indicated amount of \callers on the respective column header.
+Regarding the runtime metrics, we collected the data using an Intel(R) Core{TM} i7-4790 processor, with 16GB of RAM, running Ubuntu 16.04.4 LTS 64-bit operating system, with 4.15.0-24-generic kernel. We used 100 QCs, chosen to represent the various OM types, natures, and sub-natures. For each QC, we generated QDMs using random sets of \callers with size: 400, 700, 1000, 1500, 2000. Since there were only 200 \textcolor{red}{real} \callers already declared, larger quantities contain repeated \callers (which in the end will duplicate the data within a given QDM). The selection of \callers was performed at random, but with the same seed, so that the same sets were used in the generation of QDMs for different QCs. Table \ref{table:tempo} shows a sample of the results obtained with the execution. The first column contains the QC code, and the second column contains the time in milliseconds for the generation of the QDMs using the indicated amount of \callers on the respective column header.
 
-\textcolor{red}{pegar tempos da dissertacao, incluir AMAN}
+\textcolor{red}{pegar tempos da dissertacao, incluir AMAN ... não achei os dados ainda (tive q formatar o computador uns tempos atrás)}
 
 \begin{table}[htb!]
 	\centering
 	\caption{Time (ms) for generation of QDMs}
 	\label{table:tempo}
 	\begin{center}
-		\begin{tabular}{lllllll}
+		\begin{tabular}{|l|r|r|r|r|r|}
 			\toprule
-			\textbf{QC}      & \textbf{60}  & \textbf{100} & \textbf{400}  & \textbf{700}  & \textbf{1000} & \textbf{2000} \\ \midrule
-			
-			206410  & 184 & 275 & 944  & 1829 & 2279 & 4707 \\ % \hline
-			231303  & 197 & 282 & 975  & 1731 & 2541 & 4987 \\ % \hline
-			500311  & 201 & 291 & 948  & 1804 & 2289 & 4950 \\ % \hline
-			618322  & 175 & 264 & 922  & 1640 & 2412 & 4990 \\ % \hline
-			727310  & 173 & 302 & 937  & 1652 & 2466 & 4992 \\ % \hline
-			1450311 & 182 & 269 & 890  & 1649 & 2527 & 4785 \\ % \hline
-			2203310 & 197 & 263 & 909  & 1619 & 2344 & 4976 \\ % \hline
-			5406194 & 176 & 253 & 884  & 1598 & 2393 & 4610 \\ % \hline
-			7020003 & 212 & 241 & 922  & 1610 & 2361 & 4470 \\ % \hline
-			9131000 & 171 & 252 & 888  & 1609 & 2345 & 4471 \\ \bottomrule
+			\textbf{QC} & \textbf{400} & \textbf{700} & \textbf{1000} & \textbf{1500} & \textbf{2000} \\ \midrule
+101410   & 1866      & 3237      & 4846       & 6877       & 9231       \\
+206410   & 1875      & 3170      & 4838       & 6975       & 9348       \\
+215304   & 2026      & 3358      & 5235       & 6851       & 9416       \\
+231303   & 1954      & 3221      & 4931       & 6715       & 9264       \\
+300400   & 1903      & 3132      & 4808       & 6858       & 9283       \\
+500312   & 1992      & 3495      & 4709       & 6637       & 9213       \\
+524311   & 1999      & 3231      & 4991       & 7061       & 9686       \\
+609420   & 1895      & 3162      & 4875       & 6905       & 9259       \\
+619321   & 1945      & 3269      & 5010       & 6976       & 9163       \\
+627320   & 2006      & 3314      & 5081       & 7522       & 9011       \\
+656320   & 1868      & 3197      & 5058       & 7086       & 9398       \\
+702311   & 2902      & 4301      & \textbf{6185} & 7753       & 10098      \\
+710312   & 1996      & 3237      & 4861       & 6728       & 9102       \\
+725310   & 1872      & 3104      & 4860       & 6957       & 9190       \\
+727310   & 1949      & 3206      & 4722       & 6795       & 9222       \\
+757311   & 2084      & 3359      & 5263       & 6960       & 9230       \\
+950401   & 1993      & 3235      & 5076       & 7282       & 10060      \\
+1108400  & 2048      & 3458      & 4703       & 6727       & 9575       \\
+1112401  & 1880      & 3165      & 4837       & 6873       & 9270       \\
+5716900  & 1979      & 3423      & \textbf{4662} & 6504       & 9032       \\
+7805004  & 1808      & 2979      & 4710       & 6915       & 9287       \\
+1470310  & 1861      & 3091      & 4711       & 6824       & 8996       \\
+739310   & 1962      & 3096      & 4722       & 6753       & 9032       \\
+8204900  & 1841      & 3052      & 4731       & 6907       & 9348       \\
+1501402  & 1869      & 3092      & 4784       & 6873       & 9581       \\
+6512900  & 1882      & 3161      & 4796       & 6825       & 9691       \\
+2522135  & 1890      & 3115      & 4819       & 6928       & 9153       \\
+302401   & 1871      & 3080      & 4898       & 6875       & 9272       \\
+1115310  & 1857      & 3131      & 4904       & 6891       & 9201       \\
+7038901  & 1955      & 3268      & 5026       & 7450       & 9241       \\
+6800901  & 1870      & 3138      & 4895       & 6982       & 8975       \\
+6993900  & 1861      & 3090      & 4741       & 6793       & 9445       \\
+2205400  & 1890      & 3186      & 5038       & 7107       & 9146       \\
+7017901  & 1852      & 3061      & 4773       & 6760       & 9201       \\
+2587150  & 1854      & 3147      & 5132       & 6902       & 9034       \\
+8417000  & 1917      & 3191      & 4892       & 7010       & 9061       \\
+903311   & 1910      & 3180      & 4843       & 6950       & 9346       \\
+9015002  & 1893      & 3070      & 4783       & 6792       & 8989       \\
+5406194  & 1924      & 3124      & 4870       & 6749       & 8955       \\ \bottomrule
 		\end{tabular}
 	\end{center}
 \end{table}
