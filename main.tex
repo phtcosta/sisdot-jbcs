@@ -365,15 +365,20 @@ In this paper we present the main design and architectural decisions to build an
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Empirical Study}
 \label{sec:case_study} 
-For the validation of the proposed architecture we conducted an empirical study, which consists of the evaluation of the main architectural decisions of SISDOT, which relate to the generation of QDMs. The case study aims to answer the following research questions:
+
+We conducted an empirical study to validate some
+of the architectural decisions discussed in the previous
+section. The main goal of this study is to answer
+the following research questions:
 
 \begin{itemize}
-	\item \textbf{RQ.1}: Does our proposed approach, based on meta-programming, generate correct QDMs?
-	\item \textbf{RQ.2}: Does the use of a DSL reduce the effort necessary to implement the test cases that target QDM generation? 
-	\item \textbf{RQ.3}: Does our proposed approach, based on meta-programming, generate QDMs within a satisfactory time-frame?
+	\item \textbf{RQ.1}: Does our meta-programming approach generate correct QDMs?
+	\item \textbf{RQ.2}: Does the use of a DSL reduce the effort necessary to implement test cases?
+          
+	\item \textbf{RQ.3}: Does our meta-programming approach generate QDMs within a satisfactory time-frame?
 \end{itemize}
 
-\textbf{RQ.1} deals with the most important concern: correctness regarding the QDM generation. It is intended to demonstrate that the solution not only automatically generates the rules, eliminating the work that the developer would have to implement the solution in Java, but also that the proposed approach leads to the expected QDMs when considering a well defined set of \callers. \textbf{RQ.2} is related to the productivity of the tester and demonstrates how much code the developer have to write when using our DSL, compared to the effort to specify \callers using the Java language in unit test cases. During the activities of requirements elicitation,we identified a softgoal stating the  acceptable time for generating a QDM, which should not be above 10 seconds, when using 1000 \callers. Thus, \textbf{RQ.3} serves to ensure that the QDMs are generated in a satisfactory time.
+\textbf{RQ.1} deals with the most important concern: correctness regarding the QDM generation. It is intended to demonstrate that the solution not only automatically generates the rules, eliminating the work that the developer would have to implement the solution in Java, but also that the proposed approach leads to the expected QDMs when considering a well defined set of \callers. \textbf{RQ.2} is related to the productivity of the tester and demonstrates how much code the developer have to write when using our DSL, compared to the effort to specify \callers using the Java language in unit test cases. During the activities of requirements elicitation,we identified a softgoal stating the  acceptable time for generating a QDM, which should not be above 10 seconds, when using 1000 \callers. Thus, \textbf{RQ.3} serves to ensure that we generate QDMs in a satisfactory time.
 
 
 
@@ -382,17 +387,20 @@ For the validation of the proposed architecture we conducted an empirical study,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Data Collection and Analysis Procedures}
 
-We answer our first question qualitatively using the focus group method. Although this might look like disappointing (under the perspective of more formal methods), we have strong evidences collected from the domain experts that our approach has produced correct QDMs. We believe that this correctness is due to several factors, including the involvement of the domain experts that helped us to full understand the requirements and the expertise of our development team. Nevertheless, the decision of not writing the low-level rules at the source code level, but instead using a program generation approach that has reduced significantly the effort needed to \emph{hand write} those rules, has also contributed to achieve this confidence about correctness. 
+We answer our first question qualitatively using the focus group method. Although
+we did not perform a formal validation, here we give evidences, collected from domain experts, that our approach produces correct QDMs. We believe that this correctness is due to several factors, including the involvement of the domain experts that helped us to full understand the requirements and the expertise of our development team. Nevertheless, the decision of not writing the low-level rules at the source code level, but instead using a program generation approach that has reduced significantly the effort needed to \emph{hand write} those rules, has also contributed to achieve this confidence about correctness. We complement this qualitative
+assessment using a combination of unit testing, integration testing, and
+\emph{property based testing} approaches that allow us to
+test the QDM generation process using more than 300 scenarios. 
 
 We use a quantitative approach to answer the other two research questions.
-To this end, we collected two metrics: lines of code (LOC) and execution time. The choice of these two metrics is related to the size of the code, which may indicate higher productivity; and to the fulfillment of the functional requirement that determines the maximum execution time for QDM generation. 
-
-\textcolor{red}{arrumar: nao sao 66
-In the quantitative assessment, we use as a benchmark 200 \callers. These \callers correspond to real rules used by the Brazilian Army to perform some tests related to the generation of QDMs.} We converted each \shc written using JUnit to their correspondent one specified using our DSL.
+To this end, we collected two metrics: lines of code (LOC) and execution time. The choice of these two metrics is related to the size of the code, which may indicate higher productivity; and to the fulfillment of the non-functional requirement that determines the maximum execution time for QDM generation. 
+%\textcolor{red}{arrumar: nao sao 66
+In the quantitative assessment, we use as a benchmark 200 \callers. These \callers correspond to real rules used by the Brazilian Army to perform some tests related to the generation of QDMs. We converted each \shc written using JUnit to their correspondent one specified using our DSL.
 
 % Foram utilizados 200 chamadores, sendo que 100 deles são do tipo ABAS (Estrutura Organizacional por Componentes) e correspondem a chamadores reais utilizados pelo Exército Brasileiro (EB), e serviram para a realização de alguns testes na geração de QDMs pela equipe de desenvolvimento. Foram gerados, de forma automática, 100 chamadores do tipo ÁRVORE (Estrutura Organizacional Completa), para que os dois tipos de chamadores fossem contemplados na realização dos testes.
 
-200 \callers were used, 100 of which are ABAS (Organizational Structure by Components) and correspond to real callers used by the Brazilian Army (EB), and served to perform some tests in the generation of QDMs by the development team. Automatically, 100 \callers of the TREE (Full Organizational Structure) type were generated, so that the two types of \callers could be included in the tests.
+%% 200 \callers were used, 100 of which are ABAS (Organizational Structure by Components) and correspond to real callers used by the Brazilian Army (EB), and served to perform some tests in the generation of QDMs by the development team. Automatically, 100 \callers of the TREE (Full Organizational Structure) type were generated, so that the two types of \callers could be included in the tests.
 
 {\color{red}rbonifacio:
   seria possivel explorar algo como cobertura de codigo aqui? ou
