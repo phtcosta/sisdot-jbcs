@@ -79,15 +79,6 @@ A high-level rule has one or more distribution rules. Each rule has a type, a va
 One of the factors that motivated the use of a rule based engine was the similarity between \callers and the ``if-then'' rules of these mechanisms.  %whose essential structure is shown in Listing~\ref{code:drlStructure}.
 An \shc has a set of conditions that fits the conditional part of a rule (``if'') and has a set of actions (``then'') that, in this case, trigger the distribution of MEMs throughout the expected military unities.
 
-%\begin{lstlisting}[frame=single, caption={Structure of a rule specified in Drools}, label={code:drlStructure}]
-%rule "name"
-%    attributes
-%    when
-%        LHS
-%    then
-%        RHS
-%end
-%\end{lstlisting}
 
 
 The list of retrieved \callers contains only Java objects. In order to be able to use the rule engine in a transparent way for the end users (and also for developers in future maintenance scenarios), we decided to use a meta-programming approach, translating these objects into a set of rules (a program in logic programming) that might be used by a rule-based engine. As mentioned before, we decided to use the \emph{Drools rule-based engine} in the context of SISDOT (Figure \ref{fig:runtime_qdm}), mostly because of its integration capabilities with both JEE systems and the Wildfly application server. Accordingly, the \callers are translated into DRL rules (Listing~\ref{code:drl} presents an example of a \emph{low-level Drools rule}). To this end, we use a template engine (FreeMaker) to implement this particular transformation (Figure \ref{fig:runtime_qdm}), using a template that contains the required \emph{markups} for transforming \shc into \emph{low-level} Drools rules. That is, for each \shc, the template engine populates the template, resulting in a DRL rule consistent with the converted \shc.
@@ -121,26 +112,28 @@ We implemented \hlrdsl  using Xtext, which generates plugins that allow code edi
 
 \begin{lstlisting}[frame=single, float=*t, language=Xtext, caption={\it Xtext grammar defining the DSL structure}, label={code:gramatica}]
 grammar br.unb.cic.sisdot.chamador.HLRDsl 
-with org.eclipse.xtext.common.Terminals
+        with org.eclipse.xtext.common.Terminals
+        
 generate hlrdsl "http://www.unb.br/sisdot/hlrdsl"
 
 Model:
-rules += Rule*;
+  rules += Rule*;
 
 Rule:
-'rule' code = INT '{'
-('type' '=' type=OmType ',')?
-'materials' '=' '['items+=Item (',' items+=Item)*'],'
-'cnds' '=' '['cnds+=Condition (',' cnds+=Condition)*']'
-'}';
+  'rule' code = INT '{'
+    ('type' '=' type=OmType ',')?
+    'materials' '=' '['items+=Item (',' items+=Item)*'],'
+    'cnds' '=' '['cnds+=Condition (',' cnds+=Condition)*']'
+  '}';
 
-Item: '(' codot=STRING (':' name=STRING)? ':' amount=INT ')';
+Item: 
+  '(' codot=STRING (':' name=STRING)? ':' amount=INT ')';
 
 Condition:
-'(' ('cond' '=' cond=ConditionType ',')?
-'type' '=' type = RuleType ','
-'values' '=' '[' values+=STRING (',' values+=STRING)* ']'
-')';
+  '(' ('cond' '=' cond=ConditionType ',')?
+    'type' '=' type = RuleType ','
+    'values' '=' '[' values+=STRING (',' values+=STRING)* ']'
+  ')';
 
 enum OmType: BOTH | OPERATIONAL | NOT_OPERATIONAL;
 enum ConditionType: AFF | NEG;
@@ -153,16 +146,16 @@ the materials (defined in the list of materials construct) for \emph{operational
 \begin{small}
 	\begin{lstlisting}[frame=single, language=DSL, caption={\it Example of a \shc declaration using our DSL}, label={code:dslExample}]
 rule 1 { 
-    type = OPERATIONAL, 
-    materials = [ 
-        ("1051000007" : "Rifle" : 1), 
-        ("1020100011" : "Rifle Carrying Case" : 2)
-    ], 
-    cnds = [ 
-        (cond=NEG, type=DEPARTMENT, values=[14086 , 1130]),
-        (type=QUALIFICATION, values=[782, 756]), 
-        (type=ROLE, values=[2, 12, 15, 21])
-    ]
+  type = OPERATIONAL, 
+  materials = [ 
+    ("1051000007" : "Rifle" : 1), 
+    ("1020100011" : "Rifle Carrying Case" : 2)
+  ], 
+  cnds = [ 
+    (cond=NEG, type=DEPARTMENT, values=[14086, 1130]),
+    (type=QUALIFICATION, values=[782, 756]), 
+    (type=ROLE, values=[2, 12, 15, 21])
+  ]
 }
 	\end{lstlisting}
 \end{small}
@@ -183,34 +176,33 @@ allowing a better understanding of the effect of each \shc for building QDMs.}
 
 \begin{lstlisting}[frame=single, language=Cucumber, caption={\it Cucumber feature}, label={code:cucumber}]
 Feature: QDM 757311
-As a user
-I want to generate a QDM from HLRs
+  As a user
+  I want to generate a QDM from HLRs
 
-Scenario: Test 1
-Given QC with code 757311
-And HRL: 1, 2
-When I generate a QDM
-And the results are consistent
-Then positions must be populated
-| idDep    | idPos   | codot      | amount |
-| 6765748  | 10403   | 1051000025 | 1      |
-| 6765748  | 10403   | 1020100017 | 1      |
-| 6765748  | 10403   | 1020100013 | 1      |
-| 6765748  | 10403   | 1051000006 | 1      |
-| 6765748  | 21328   | 1051000025 | 1      |
-| 6765750  | 10122   | 1051000025 | 1      |    
-| 6765793  | 13276   | 1051000025 | 6      |
-| 6765796  | 24655   | 1051000025 | 1      |
-| 6765796  | 24429   | 1051000025 | 2      |
-| 6765798  | 24429   | 1051000025 | 3      |
-| 6765798  | 11433   | 1051000025 | 9      |   
-And the final result must be:
-| codot      | amount |
-| 1020100013 | 74     |
-| 1020100017 | 74     |
-| 1051000006 | 74     |
-| 1051000025 | 74     |
-
+  Scenario: Test 1
+    Given QC with code 757311
+    And HRL: 1, 2
+    When I generate a QDM
+    And the results are consistent
+    Then positions must be populated
+    | idDep    | idPos   | codot      | amount |
+    | 6765748  | 10403   | 1051000025 | 1      |
+    | 6765748  | 10403   | 1020100017 | 1      |
+    | 6765748  | 10403   | 1020100013 | 1      |
+    | 6765748  | 10403   | 1051000006 | 1      |
+    | 6765748  | 21328   | 1051000025 | 1      |
+    | 6765750  | 10122   | 1051000025 | 1      |    
+    | 6765793  | 13276   | 1051000025 | 6      |
+    | 6765796  | 24655   | 1051000025 | 1      |
+    | 6765796  | 24429   | 1051000025 | 2      |
+    | 6765798  | 24429   | 1051000025 | 3      |
+    | 6765798  | 11433   | 1051000025 | 9      |   
+    And the final result must be:
+    | codot      | amount |
+    | 1020100013 | 74     |
+    | 1020100017 | 74     |
+    | 1051000006 | 74     |
+    | 1051000025 | 74     |
 \end{lstlisting}
 
 Our second testing approach automatically generates test cases from our DSL and from a random sample of simple combinations that simulate organizational unities. This \emph{property based approach} involves a custom Maven plugin that currently generates random scenarios, freeing the tester to only implement more complex tests related to the QDM generation. 
