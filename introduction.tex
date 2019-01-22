@@ -19,10 +19,7 @@ for its particular type of abstract organizational unit.
 Decision support systems are essential in this domain, given the importance and complexity of the processes related to the allocation of military employment materials. In particular, the rules used to predict military materials and equipment are not trivial, and implementing these rules directly in the source code makes the systems difficult to understand and maintain. This problem mostly occurs because the number of conditions that need to be expressed is proportional to the complexity of the organizational structure and the number of materials. In the case of an entire army force (such as the Brazilian Army), this number is noteworthy. In addition, a ``\emph{hard-coding}'' solution does not allow domain experts to trivially specify and test new derivation rules. For these reasons, it is preferably to implement these rules declaratively, using languages, tools, or libraries that
 support inference mechanisms.
 
-However, it is anything but easy to introduce
-either a logic language (e.g., Prolog or Datalog) or a specific library (such as Drools~\cite{browne2009}) in a complex enterprise
-
-system---particularly in environments whose whole ecosystem is well established and based on a set of constraints related to both language and libraries usage. Furthermore, these solutions require a steep learning curve, and thus it is worth to modularize and abstract their usage in the architecture of enterprise systems.
+However, it is anything but easy to introduce either a logic language (e.g., Prolog or Datalog) or a specific library (such as Drools~\cite{browne2009}) in a complex enterprise system---particularly in environments whose whole ecosystem is well established and based on a set of constraints related to both language and libraries usage. Furthermore, these solutions require a steep learning curve, and thus it is worth to modularize and abstract their usage in the architecture of enterprise systems.
 
 In a previous work we describe the main design and architectural decisions we had taken to implement the mechanisms that assist decision makers to plan the distribution of military materials and equipment across the organizational structure of the Brazilian Army~\cite{phtcosta:sbcars}. These decisions aim to both (a) abstract the adoption of a business rule engine using {\bf meta-programming} and (b) allow domain experts to simulate the definition and testing of rules using a {\bf domain specific language} (DSL). Altogether, previously we contributed with:
 
@@ -35,21 +32,9 @@ In a previous work we describe the main design and architectural decisions we ha
 \end{enumerate}
 
 
-In this paper we extend our previous work with a
-more detailed description of our DSL and an in depth evaluation of
-our approach---considering the results of  
-a property based testing execution. We complemented
-this evaluation through a qualitative assessment
-using the focus group method. The goal of this
-comprehensive assessment was to collect more evidence
-about how our approach fulfills the functional requirement
-of correctly distributing equipment to military units, by
-considering a more systematic testing technique and the opinion
-of domain experts responsible
-for planing the distribution of operational material in the
-Brazilian Army. 
+In this paper we extend our previous work with a more detailed description of our DSL \textcolor{red}{and an in depth evaluation of our approach}---considering the results of a property based testing execution. We complemented this evaluation through a qualitative assessment using the focus group method. The goal of this comprehensive assessment was to collect more evidence about how our approach fulfills the functional requirement of correctly distributing equipment to military units, by considering a more systematic testing technique and the opinion of domain experts responsible for planing the distribution of operational material in the Brazilian Army. 
 
-{\color{red}Although we discuss the distribution of materials and equipment for the military domain (which is far from trivial), we believe that the architectural decisions discussed here can be exploited to other logistics and endorsements scenarios in which it is also desirable to transparently introduce the support for rule based engines in enterprise systems.}
+Although we discuss the distribution of materials and equipment for the military domain (which is far from trivial), we believe that the architectural decisions discussed here can be exploited to other logistics and endorsements scenarios in which it is also desirable to transparently introduce the support for rule based engines in enterprise systems.
 
 \textcolor{red}{This paper is organized as follows. The Section \ref{sec:logistics} presents the concepts related to the domain of material logistics. Section \ref{sigelog} presents the concepts related to business rules and rule based engines and Section \ref{back} presents some background information related to generative programming—techniques that we use to support the design and implementation of our approach. Section \ref{sec:Methodology} explains the research methodology used. Section \ref{sec:architecture} presents the main design and architectural decisions we take to develop the mechanism responsible for the distribution of materials. In Section \ref{sec:case_study} we present the results of an empirical study that validate our approach. Section \ref{threats} presents the discussion and threats to validity this work. Finally, Section \ref{sec:related} and Section \ref{sec:conclusao} relate our work with the existing literature and present some final remarks.}
 

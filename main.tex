@@ -103,6 +103,22 @@
 \newcommand{\lstXtext}[1]{\lstinline[breaklines=true,language=Xtext,basicstyle=\listingsfontinline,mathescape,literate={\-}{}{0\discretionary{-}{}{}}]\S#1\S}
 
 
+\lstdefinelanguage{Xtend}[]{Java}{
+	morekeywords={def},
+	keywordstyle=[2]{\textbf},
+	morecomment=[l]{//}, 
+	morecomment=[s]{/*}{*/}, 
+	morestring=[b]",
+	showspaces=false,
+	tabsize=2, 
+	numbers=left, 
+	numbersep=2pt,
+	numberblanklines=false,
+	xleftmargin=2em,
+	frame=single,
+	framexleftmargin=1.5em
+}
+
 \lstdefinelanguage{DRL}[]{Java}{
 	morekeywords={rule, when, from, accumulate, and, not, in, then, for, int, end},
 	keywordstyle=[2]{\textbf},

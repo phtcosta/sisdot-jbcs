@@ -20,8 +20,8 @@ During the modeling of entities related to the high level rule domain, the simil
 
 The initial tests for generating QDMs required the declaration of high level rule in the Java language, which was, in most cases, very time-consuming, requiring dozens of lines of code, even using some auxiliary methods that increased reuse. Furthermore, the definition of the expected result, to compare with the generated QDM, required the presence of the user to indicate/verify the actual results. When user presence was not possible, the tester should manually analyze the QC to identify expected results, and declare them using the Java language for the conference at the end of the test run. These were the key factors that led to the development of a DSL, which aimed to facilitate the declaration of high level rule, and the use of the cucumber tool for the definition of test cases. Despite this, the tests were still manually defined, although there was already an expressive gain in productivity, and they still needed the user or a QC analysis to define the expected results. Thus, a solution was developed for the automatic generation of tests and for the generation of QDMs, where both the high level rule and the expected result were generated automatically, as well as the definition of the test case in cucumber.
 
-\begin{figure}[!ht] %\centering
-	\includegraphics[scale=0.40]{img/processo.png}
-	\caption{Tests Generation Process} 
-	\label{fig:process}
-\end{figure}
+%\begin{figure}[!ht] %\centering
+%	\includegraphics[scale=0.40]{img/processo.png}
+%	\caption{Tests Generation Process} 
+%	\label{fig:process}
+%\end{figure}
