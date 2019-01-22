@@ -224,7 +224,7 @@
    corref={aff1},                       % id of corresponding address, if any
    %noteref={n1},                        % id's of article notes, if any
    email={pedro.costa@aluno.unb.br}   % email address
-]{\inits{PHT}\fnm{Pedro HT} \snm{Costa}}
+]{\inits{PHT}\fnm{Pedro Henrique T.} \snm{Costa}}
 \author[
    addressref={aff1},
    corref={aff1},
@@ -249,8 +249,8 @@
   \orgname{Computer Science Department, University of Bras\'{i}lia - (UnB)}, % university, etc
   \street{P.O. Box 4466},                     %
   \postcode{70910-900}                                % post or zip code
-  \city{Bras\'{i}lia},                        % city
-  \cny{BR}                                    % country
+  \city{Bras\'{i}lia - DF},                        % city
+  \cny{Brazil}                                    % country
 }
 
 
@@ -353,8 +353,8 @@ In this paper we present the main design and architectural decisions to build an
 
 
 \input{introduction}
-\input{methodology}
 \input{background}
+\input{methodology}
 \input{architecture} 
 
 
@@ -395,21 +395,19 @@ assessment using a combination of unit testing, integration testing, and
 test the QDM generation process using more than 300 scenarios. 
 
 We use a quantitative approach to answer the other two research questions.
-To this end, we collected two metrics: lines of code (LOC) and execution time. The choice of these two metrics is related to the size of the code, which may indicate higher productivity; and to the fulfillment of the non-functional requirement that determines the maximum execution time for QDM generation. 
-%\textcolor{red}{arrumar: nao sao 66
-In the quantitative assessment, we use as a benchmark 200 \callers. These \callers correspond to real rules used by the Brazilian Army to perform some tests related to the generation of QDMs. We converted each \shc written using JUnit to their correspondent one specified using our DSL.
+To this end, we collected two metrics: lines of code (LOC) and execution time. The choice of these two metrics is related to the size of the code, which may indicate higher productivity; and to the fulfillment of the non-functional requirement that determines the maximum execution time for QDM generation. In the quantitative assessment, we use as a benchmark 200 \callers. These \callers correspond to real rules used by the Brazilian Army to perform some tests related to the generation of QDMs. We converted each \shc written using JUnit to their correspondent one specified using our DSL.
 
 % Foram utilizados 200 chamadores, sendo que 100 deles são do tipo ABAS (Estrutura Organizacional por Componentes) e correspondem a chamadores reais utilizados pelo Exército Brasileiro (EB), e serviram para a realização de alguns testes na geração de QDMs pela equipe de desenvolvimento. Foram gerados, de forma automática, 100 chamadores do tipo ÁRVORE (Estrutura Organizacional Completa), para que os dois tipos de chamadores fossem contemplados na realização dos testes.
 
 %% 200 \callers were used, 100 of which are ABAS (Organizational Structure by Components) and correspond to real callers used by the Brazilian Army (EB), and served to perform some tests in the generation of QDMs by the development team. Automatically, 100 \callers of the TREE (Full Organizational Structure) type were generated, so that the two types of \callers could be included in the tests.
 
-{\color{red}rbonifacio:
-  seria possivel explorar algo como cobertura de codigo aqui? ou
-  explorar alguma coisa da abordagem PBT? Talvez, usando essa informacao,
-  fosse possivel responder a primeira questao de pesquisa usando tanto uma
-abordagem qualitativa quanto uma abordagem quantitativa.}
+%{\color{red}rbonifacio:
+ % seria possivel explorar algo como cobertura de codigo aqui? ou
+ % explorar alguma coisa da abordagem PBT? Talvez, usando essa informacao,
+ % fosse possivel responder a primeira questao de pesquisa usando tanto uma
+%abordagem qualitativa quanto uma abordagem quantitativa.}
 
-{\color{red}pedro: acho que cobertura não vale nesse caso. Mas sobre a abordagem PBT talvez possa falar das combinações da geração automática de testes. EX: QC tem 4 propriedades: tipoOM, natureza, subNatureza e valor ... foram cobertas boa parte das combinacoes: valor-tipoOM (2*2=4 e foram gerados os 4 testes para essas combinacoes); valor-subnatureza, natureza, tipoOM --> 2*4=16 e foram gerados os 16 testes cobrindo essas combinacoes ... OBS:. estou usando * para potencia pra nao dar erro na compilacao}
+%{\color{red}pedro: acho que cobertura não vale nesse caso. Mas sobre a abordagem PBT talvez possa falar das combinações da geração automática de testes. EX: QC tem 4 propriedades: tipoOM, natureza, subNatureza e valor ... foram cobertas boa parte das combinacoes: valor-tipoOM (2*2=4 e foram gerados os 4 testes para essas combinacoes); valor-subnatureza, natureza, tipoOM --> 2*4=16 e foram gerados os 16 testes cobrindo essas combinacoes ... OBS:. estou usando * para potencia pra nao dar erro na compilacao}
 
 \subsection{Results of the Qualitative Assessment}
 
@@ -473,7 +471,7 @@ Participants evidenced that functionality was being performed correctly and that
 	\end{center}
 \end{table}
 
-Regarding the runtime metrics, we collected the data using an Intel(R) Core{TM} i7-4790 processor, with 16GB of RAM, running Ubuntu 16.04.4 LTS 64-bit operating system, with 4.15.0-24-generic kernel. We used 100 QCs, chosen to represent the various OM types, natures, and sub-natures. For each QC, we generated QDMs using random sets of \callers with size: 400, 700, 1000, 1500, 2000. Since there were only 200 \textcolor{red}{real} \callers already declared, larger quantities contain repeated \callers (which in the end will duplicate the data within a given QDM). The selection of \callers was performed at random, but with the same seed, so that the same sets were used in the generation of QDMs for different QCs. Table \ref{table:tempo} shows a sample of the results obtained with the execution. The first column contains the QC code, and the second column contains the time in milliseconds for the generation of the QDMs using the indicated amount of \callers on the respective column header.
+Regarding the runtime metrics, we collected the data using an Intel(R) Core{TM} i7-4790 processor, with 16GB of RAM, running Ubuntu 16.04.4 LTS 64-bit operating system, with 4.15.0-24-generic kernel. We used 100 QCs, chosen to represent the various OM types, natures, and sub-natures. For each QC, we generated QDMs using random sets of \callers with size: 400, 700, 1000, 1500, 2000. Since there were only 200 real \callers already declared, larger quantities contain repeated \callers (which in the end will duplicate the data within a given QDM). The selection of \callers was performed at random, but with the same seed, so that the same sets were used in the generation of QDMs for different QCs. Table \ref{table:tempo} shows a sample of the results obtained with the execution. The first column contains the QC code, and the second column contains the time in milliseconds for the generation of the QDMs using the indicated amount of \callers on the respective column header.
 
 %AMAN=7006000
 
@@ -573,6 +571,7 @@ Figure \ref{fig:geracao} shows the time necessary to generate QDMs for 5 differe
 %% Discussion, Lessons Learned, and Threats to Validity
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Discussion and Threats to Validity}
+\label{threats}
 
 When analyzing the data related to RQ.2, it was possible to realize that the representation of a \shc using our DSL is on average 54\% smaller than the representation of the same rule in Java. This indicates a possible productivity gain for the developer when writing test cases, since she will have to write a smaller amount of code. In addition, using our DSL, we specify \callers using a declarative approach, which is close to the vocabulary of the problem domain. With respect to the third research question, the limit imposed by the functional requirement of 10 seconds was not exceeded, even when considering 2000 \callers, which is twice the number of \callers expected for the system in production. It is important to notice that these number (10 seconds as time limit and 1000 \callers were collected together with the stakeholders of SISDOT).
 
@@ -582,7 +581,7 @@ However, we found that testing the process of QDM generation was time consuming,
 
 Our empirical study presents several limitations. First, we discuss \emph{correctness} based on the results of both integration and acceptance tests, though also considering the opinion of the domain experts that are currently confident that our approach for QDM generation is working properly. Surely, we could have used a more formal approach for discussing correctness, and we postpone this investigation to a future work. Nevertheless, considering the scope of this paper, the feedback from the domain experts and testing outcomes reduce some of ours uncertainties about correctness. 
 
-Second, we only considered 200 \textcolor{red}{real} \callers in our study, which served as a basis for measuring the time to generate QDMs. SISDOT is expected to have around 1000 \callers in the production environment. To mitigate the threat related to the small number of available \callers for testing, we considered their repetition when carrying out a performance test of SISDOT. In this way, we expect that the system would present a behavior similar to the production environment (with respect to performance). The same situation occurs with the comparison of lines of code between the declarations of \callers in DSL and Java. As the number of \callers is relatively small, it may not be possible to generalize the results we found.
+Second, we only considered 200 real \callers in our study, which served as a basis for measuring the time to generate QDMs. SISDOT is expected to have around 1000 \callers in the production environment. To mitigate the threat related to the small number of available \callers for testing, we considered their repetition when carrying out a performance test of SISDOT. In this way, we expect that the system would present a behavior similar to the production environment (with respect to performance). The same situation occurs with the comparison of lines of code between the declarations of \callers in DSL and Java. As the number of \callers is relatively small, it may not be possible to generalize the results we found.
 
 
 

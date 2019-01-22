@@ -17,6 +17,7 @@ Before generating a QDM, it is necessary to catalog all relevant MEMs to a given
 Deriving QDMs and QDMPs is not trivial and its complexity is due to several factors, including the organizational structure of the Brazilian Army, the number of existing functions and qualifications that must be considered, and the reasonable number of MEMs. The process might also vary depending on the class of the materials. Moreover, it is possible to specify the \callers in different ways, which might interact to each other leading to undesired results (e.g., the same material being assigned several times to a given soldier). 
 
 \section{SIGELOG Architectural Constraints}
+\label{sigelog}
 
 Due to the number of logical decisions, using an imperative language to implement the process of QDM generation 
 is not an interesting choice. However, the SIGELOG architecture reinforces the use of Java Enterprise Edition platform---so we had little flexibility to introduce a more suitable language (such as Prolog) to generate QDMs. Other constraints guided the architectural decisions of SISDOT, including:  
@@ -35,6 +36,7 @@ limit constraints. For the third constraint, we implemented a DSL that simplifie
 
 
 \section{Technical Background}
+\label{back}
 
 
 In this section we
