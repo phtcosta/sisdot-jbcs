@@ -26,6 +26,24 @@ In order to further detail and illustrate the SISDOT architecture, and the main 
 	\label{fig:runtime_qdm}
 \end{figure}
 
+
+
+\emph{Considering the user interaction}, a previously authenticated specialist on the distribution of equipment throughout the Brazilian Army, using her web browser, requests the web page that allows the generation of QDMs (one of the main products of SISDOT). 
+After selecting the \emph{generic organizational unity} for which a QDM would be generated, the system sends a request to the server. The client tier is responsible for these actions. The request is then received by a component of the presentation tier, more specifically by a \emph{managed bean} that works as a \emph{front controller} (in this case, a JSF controller). 
+
+This controller validates the request data, before sending a new request to the business tier. In the business tier, the service 
+that implements the business rules related to the QDM domain object is invoked to start the QDM generation process, which includes actions to (a) transform \callers into the \emph{low-level rules} specified using the Drools Rule Language (DRL), (b) execute these rules to instantiate a business object that represents a QDM, and (c) save this object in the persistence layer (a relational database). 
+
+This process for generating a QDM starts by retrieving a list of previously registered \callers. An \shc, regardless of its type (either based on the full structure of the organization or based on its components), is related to one or more \emph{military materials / equipment} (MEMs) and defines the respective amount that should be assigned to a military unit (which ranges from an organization, a center, a department, a brigade, or even a military function or qualification of a soldier). 
+
+A high-level rule has one or more distribution rules. Each rule has a type, a value, and an associated description. For example, a rule for a department type has the value of the department identifier and the description of the department name. For a better use of the database, avoiding the definition of numerous columns that would inevitably be null for several rule types, we decided to persist the distribution rules of an \shc using JSON (JavaScript Object Notation), which is converted back to an object when it is retrieved. The set of these rules defines exactly who should receive the MEMs specified by the \shc.
+
+One of the factors that motivated the use of a rule based engine was the similarity between \callers and the ``if-then'' rules of these mechanisms.  %whose essential structure is shown in Listing~\ref{code:drlStructure}.
+An \shc has a set of conditions that fits the conditional part of a rule (``if'') and has a set of actions (``then'') that, in this case, trigger the distribution of MEMs throughout the expected military unities.
+
+The list of retrieved \callers contains only Java objects. In order to be able to use the rule engine in a transparent way for the end users (and also for developers in future maintenance scenarios), we decided to use a meta-programming approach, translating these objects into a set of rules (a program in logic programming) that might be used by a rule-based engine. As mentioned before, we decided to use the \emph{Drools rule-based engine} in the context of SISDOT (Figure \ref{fig:runtime_qdm}), mostly because of its integration capabilities with both JEE systems and the Wildfly application server. Accordingly, the \callers are translated into DRL rules (Listing~\ref{code:drl} presents an example of a \emph{low-level Drools rule}). To this end, we use a template engine (FreeMaker) to implement this particular transformation (Figure \ref{fig:runtime_qdm}), using a template that contains the required \emph{markups} for transforming \shc into \emph{low-level} Drools rules. That is, for each \shc, the template engine populates the template, resulting in a DRL rule consistent with the converted \shc.
+% A code snippet of the template used for DRL generation can be seen in Appendix A. 
+
 \begin{lstlisting}[frame=single, float=*t, language=DRL, caption=Example of a \emph{low-level Drools rule}, label={code:drl}]
 rule "HLR 1"   	
   when
@@ -63,22 +81,6 @@ rule "HLR 1"
     }
 end
 \end{lstlisting}
-
-\emph{Considering the user interaction}, a previously authenticated specialist on the distribution of equipment throughout the Brazilian Army, using her web browser, requests the web page that allows the generation of QDMs (one of the main products of SISDOT). 
-After selecting the \emph{generic organizational unity} for which a QDM would be generated, the system sends a request to the server. The client tier is responsible for these actions. The request is then received by a component of the presentation tier, more specifically by a \emph{managed bean} that works as a \emph{front controller} (in this case, a JSF controller). 
-
-This controller validates the request data, before sending a new request to the business tier. In the business tier, the service 
-that implements the business rules related to the QDM domain object is invoked to start the QDM generation process, which includes actions to (a) transform \callers into the \emph{low-level rules} specified using the Drools Rule Language (DRL), (b) execute these rules to instantiate a business object that represents a QDM, and (c) save this object in the persistence layer (a relational database). 
-
-This process for generating a QDM starts by retrieving a list of previously registered \callers. An \shc, regardless of its type (either based on the full structure of the organization or based on its components), is related to one or more \emph{military materials / equipment} (MEMs) and defines the respective amount that should be assigned to a military unit (which ranges from an organization, a center, a department, a brigade, or even a military function or qualification of a soldier). 
-
-A high-level rule has one or more distribution rules. Each rule has a type, a value, and an associated description. For example, a rule for a department type has the value of the department identifier and the description of the department name. For a better use of the database, avoiding the definition of numerous columns that would inevitably be null for several rule types, we decided to persist the distribution rules of an \shc using JSON (JavaScript Object Notation), which is converted back to an object when it is retrieved. The set of these rules defines exactly who should receive the MEMs specified by the \shc.
-
-One of the factors that motivated the use of a rule based engine was the similarity between \callers and the ``if-then'' rules of these mechanisms.  %whose essential structure is shown in Listing~\ref{code:drlStructure}.
-An \shc has a set of conditions that fits the conditional part of a rule (``if'') and has a set of actions (``then'') that, in this case, trigger the distribution of MEMs throughout the expected military unities.
-
-The list of retrieved \callers contains only Java objects. In order to be able to use the rule engine in a transparent way for the end users (and also for developers in future maintenance scenarios), we decided to use a meta-programming approach, translating these objects into a set of rules (a program in logic programming) that might be used by a rule-based engine. As mentioned before, we decided to use the \emph{Drools rule-based engine} in the context of SISDOT (Figure \ref{fig:runtime_qdm}), mostly because of its integration capabilities with both JEE systems and the Wildfly application server. Accordingly, the \callers are translated into DRL rules (Listing~\ref{code:drl} presents an example of a \emph{low-level Drools rule}). To this end, we use a template engine (FreeMaker) to implement this particular transformation (Figure \ref{fig:runtime_qdm}), using a template that contains the required \emph{markups} for transforming \shc into \emph{low-level} Drools rules. That is, for each \shc, the template engine populates the template, resulting in a DRL rule consistent with the converted \shc.
-% A code snippet of the template used for DRL generation can be seen in Appendix A. 
 
 The RHS of the Drools rule of Listing~\ref{code:drl} iterates over all selected military roles (that satisfy the constraints of the LHS). We use a helper class to assign the equipment id (in this case a \emph{rifle} whose id is 1051000007) to the individual roles. Besides providing means to populate a QDM, this helper class also checks some constraints related to the QDM domain model. 
 
@@ -159,6 +161,9 @@ The component responsible for generating QDM works only with Java objects. Then 
 O Xtend é uma linguagem de programação baseada em Java, de uso geral, com todos os recursos e totalmente interoperável com o Java. Xtend tem uma sintaxe mais concisa do que Java e fornece recursos poderosos como type inference, extension methods, dispatch methods e expressões lambda, besides multiline template expressions, que são úteis ao escrever geradores de código e outras customizações \cite{bettini2016}.
 
 
+
+
+
 % Foram implementadas também customizações para a validação, formatação e quick-fix. Quando o usuário está utilizando o editor gerado pelo Xtext é possível formatar o código de acordo com a customizações implementadas. Várias validações adicionais, além das incluídas por padrão, são realizadas quando o usuário salva o arquivo da DSL, como: checagem de duplicidade de código da high-level rule, validação do código do high-level rule (maior que zero), tamanho inválido de determinadas strings (como o codot), codot duplicado no mesmo high-level rule, entre outras. Quando é encontrada duplicação de códigos de high-level rule, é habilitada a opção de quick-fix, onde o código é alterado automaticamente para o próximo número após o maior código existente na DSL.
 
 Also implemented were customizations for validation, formatting and quick-fix. When the user is using the editor generated by Xtext it is possible to format the code according to the implemented customizations. Several additional validations, in addition to those included by default, are performed when the user saves the DSL file, such as: high-level rule duplication checking, high-level rule validation (greater than zero), invalid size of certain strings (like the codot), duplicate codot at the same high-level rule, among others. When duplication of high-level rule codes is found, the quick-fix options is enabled, where the code is automatically changed to the next number after the largest DSL code.
@@ -166,7 +171,9 @@ Also implemented were customizations for validation, formatting and quick-fix. W
 
 
 
-Na Listing \ref{code:xtend_validation} é apresentada uma versão simplificada das customizações implementadas, em Xtend, para a validação de chamadores, omitindo as outras cutomizações, assim como imports, métodos auxiliares, entre outros. Conforme apresentado, são validados códigos de chamadores duplicados, já que estes devem ser únicos pois servem para identificar o chamador, e códigos inválidos, que devem ser maior que zero.
+Na Listing \ref{code:xtend_validation} é apresentada uma versão simplificada das customizações implementadas, em Xtend, para a validação de chamadores. %, omitindo as outras cutomizações, assim como imports, métodos auxiliares, entre outros
+Conforme apresentado, são validados códigos de chamadores duplicados, já que estes devem ser únicos pois servem para identificar o chamador, e códigos inválidos, que devem ser maior que zero.
+
 
 \begin{small}
 \begin{lstlisting}[frame=single, language=Xtend, caption={\it Validation Customization}, label={code:xtend_validation}]
@@ -209,7 +216,7 @@ class HLRDslValidator extends AbstractHLRDslValidator {
 
 
 
-Na Listing \ref{code:xtend_quickfix} é apresentada uma versão simplificada das customizações implementadas, em Xtend, para o quickfix da validação de código duplicado de chamadores, omitindo as outras cutomizações, assim como imports, métodos auxiliares, entre outros.
+Na Listing \ref{code:xtend_quickfix} é apresentada uma versão simplificada das customizações implementadas, em Xtend, para o quickfix da validação de código duplicado de chamadores.
 
 
 \begin{small}
