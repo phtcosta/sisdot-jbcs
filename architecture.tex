@@ -108,8 +108,7 @@ As explained before, to generate a QDM, a set of \callers must be previously dec
 
 
 \begin{lstlisting}[frame=single, float=*t, language=Xtext, caption={\it Xtext grammar defining the DSL structure}, label={code:gramatica}]
-grammar br.unb.cic.sisdot.chamador.HLRDsl 
-        with org.eclipse.xtext.common.Terminals
+grammar br.unb.cic.sisdot.chamador.HLRDsl with org.eclipse.xtext.common.Terminals
         
 generate hlrdsl "http://www.unb.br/sisdot/hlrdsl"
 
@@ -203,7 +202,7 @@ public class <<HELPER>> implements ICallerHelper {
 		<<caller.generateCaller>>
 	<<ENDFOR>>
 			
-	<<declareAuxiliariesMethods>>
+	<<declareAuxMethods>>
 }
 	'''
 }
