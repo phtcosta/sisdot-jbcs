@@ -154,10 +154,64 @@ Xtext strongly uses EMF \cite{blewitt2013}. The AST created by the Xtext parser 
 
 % O componente responsável pela geração de QDM trabalha apenas com objetos Java. Então foi desenvolvido um gerador de código no projeto de desenvolvimento da DSL. Esse gerador, que é uma generalização da classe AbstractGenerator do Xtext, foi escrito na liguagem Xtend e é responsável pela conversão do modelo EMF contendo os high-level rules declarados na DSL em uma classe Java que contém a representação Java desses high-level rules. Este gerador é automaticamente executado quando o usuário edita a DSL no Eclipse ou quando da execução do plugin maven do Xtext. Como esse gerador está contido na biblioteca (JAR) da DSL, é possível sua invocação de outras formas também, conforme implementação desejada pelo desenvolvedor.
 
-The component responsible for generating QDM works only with Java objects. Then a code generator was developed in the DSL development project. This generator, which is a generalization of the Xtext AbstractGenerator class, was written in the Xtend language and is responsible for converting the EMF model containing the high-level rules declared in the DSL into a Java class containing the Java representation of these high-level rules. This generator is automatically executed when the user edits the DSL in Eclipse or when executing the Xtext maven plugin. Because this generator is contained in the DSL library (JAR), it can invoke it in other ways as well, as desired by the developer.
+%The component responsible for generating QDM works only with Java objects. Then a code generator was developed in the DSL development project. This generator, which is a generalization of the Xtext AbstractGenerator class, was written in the Xtend language and is responsible for converting the EMF model containing the high-level rules declared in the DSL into a Java class containing the Java representation of these high-level rules. This generator is automatically executed when the user edits the DSL in Eclipse or when executing the Xtext maven plugin. Because this generator is contained in the DSL library (JAR), it can invoke it in other ways as well, as desired by the developer.
+The component responsible for generating QDM works only with Java objects. Then a code generator was developed in the DSL development project. This generator, partially presented in Listing \ref{code:xtend_generator}, was written in the Xtend language and is responsible for converting the EMF model containing the high-level rules declared in the DSL into a Java class containing the Java representation of these high-level rules. This generator is automatically executed when the user edits the DSL in Eclipse or when executing the Xtext maven plugin. Because this generator is contained in the DSL library (JAR), it can invoke it in other ways as well, as desired by the developer.
 
 %ORIGINAL DO LIVRO:::Xtend is a fully featured general purpose Java-like programming language that is completely interoperable with Java. Xtend has a more concise syntax than Java and provides powerful features such as type inference, extension methods, dispatch methods, and lambda expressions, not to mention multiline template expressions, which are useful when writing code generators and other customizations \cite{bettini2016}.
 O Xtend é uma linguagem de programação baseada em Java, de uso geral, com todos os recursos e totalmente interoperável com o Java. Xtend tem uma sintaxe mais concisa do que Java e fornece recursos poderosos como type inference, extension methods, dispatch methods e expressões lambda, besides multiline template expressions, que são úteis ao escrever geradores de código e outras customizações \cite{bettini2016}, sendo esta uma das razões pelas quais optamos pelo seu uso em nossa solução.
+
+
+
+\begin{small}
+\begin{lstlisting}[frame=single, language=Xtend, caption={\it Code Generation}, label={code:xtend_generator}]
+class HLRDslGenerator extends AbstractGenerator {
+	static final String BASE_PACKAGE = "br/mil/eb/cds/sisdot/qdm/test/"
+	static final String HELPER = "CallerHelper"
+
+	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {		
+		fsa.generateFile(BASE_PACKAGE+HELPER+".java", resource.allContents.toIterable.filter(Model).get(0).generate)
+	}
+
+	def generate(Model model) '''
+package br.mil.eb.cds.sisdot.qdm.test;
+		
+<<declareImports>>
+
+public class <<HELPER>> implements ICallerHelper {
+	private static final <<HELPER>> instance = new <<HELPER>>();
+	
+	private Map<Long, Caller> callerMap;
+	private List<Caller> callerList;
+	
+	private <<HELPER>>(){ }
+	
+	public static <<HELPER>> instance() {
+		return instance;
+	}
+	
+	public Caller getCaller(Long code) {
+		return callerMap.get(code);
+	}
+	
+	public List<Caller> getCalleres() {
+		return callerList;
+	}
+	
+	<<model.loadCallerMap>>
+	
+	<<FOR caller : model.rules>>
+		<<caller.generateCaller>>
+	<<ENDFOR>>
+			
+	<<declareAuxiliariesMethods>>
+}
+	'''
+}
+\end{lstlisting}
+\end{small}
+
+
+
 
 % Foram implementadas também customizações para a validação, formatação e quick-fix. Quando o usuário está utilizando o editor gerado pelo Xtext é possível formatar o código de acordo com a customizações implementadas. Várias validações adicionais, além das incluídas por padrão, são realizadas quando o usuário salva o arquivo da DSL, como: checagem de duplicidade de código da high-level rule, validação do código do high-level rule (maior que zero), tamanho inválido de determinadas strings (como o codot), codot duplicado no mesmo high-level rule, entre outras. Quando é encontrada duplicação de códigos de high-level rule, é habilitada a opção de quick-fix, onde o código é alterado automaticamente para o próximo número após o maior código existente na DSL.
 
@@ -177,13 +231,13 @@ class HLRDslValidator extends AbstractHLRDslValidator {
 	static val INVALID_CODE = 'invalidCode'
 	static val INVALID_CODE_MSG = "The code must be greater than zero: "
 	
-	static var Map<Integer, Caller> callerMap = new HashMap;
+	static var Map<Integer, Rule> callerMap = new HashMap;
 
 	@Check
-	def checkDuplicatedCode(Caller caller) {
+	def checkDuplicatedCode(Rule caller) {
 		if (callerMap.containsKey(caller.code)) {
 			error(DUPE_CODE_MSG + caller.code, 
-        HLRDslPackage.Literals.CALLER__CODE,
+        HLRDslPackage.Literals.RULE__CODE, 
 				DUPE_CODE)
 		} else {
 			callerMap.put(caller.code, caller);
@@ -191,10 +245,10 @@ class HLRDslValidator extends AbstractHLRDslValidator {
 	}
 
 	@Check
-	def checkInvalidCode(Caller caller) {
+	def checkInvalidCode(Rule caller) {
 		if (caller.code <= 0) {
 			error(INVALID_CODE_MSG + caller.code, 
-        HLRDslPackage.Literals.CALLER__CODE,
+        HLRDslPackage.Literals.RULE__CODE,
 				INVALID_CODE)
 		}
 	}
@@ -216,12 +270,11 @@ class HLRDslQuickfixProvider extends DefaultQuickfixProvider {
 		acceptor.accept(issue, 'Duplicated code', HLRDslValidator.DUPE_CODE_MSG+issue.data, 'Entity.gif') [
 			element, context |
 			val model = element.eContainer as Model
-			val max = model.callers.map[code].max
+			val max = model.rules.map[code].max
 			val newMax = max + 1			
-			(element as Caller).code = newMax
+			(element as Rule).code = newMax
 		]
 	}
-	
 }
 \end{lstlisting}
 \end{small}
@@ -233,7 +286,7 @@ During the development of DSL, tests were generated which are executed during th
 
 
 
-Listing \ref{code:dslExample} presents a simple example of a \shc declaration using our DSL. The goal of this rule is to distribute the materials (defined in the list of materials construct) for \emph{operational} OMs (see the type construct) and militaries \emph{not working in the specified list of departments} with a set of qualifications, arms and roles. While the definition of this rule using our DSL requires 12 lines of code, the corresponding definition of the same rule using a Java test case requires around 30 lines of imperative code.
+Listing \ref{code:dslExample} presents a simple example of a \shc declaration using our DSL. The goal of this rule is to distribute the materials (defined in the list of materials construct) for \emph{operational} OMs (see the type construct) and militaries \emph{not working in the specified list of departments} with a set of qualifications and roles. While the definition of this rule using our DSL requires 12 lines of code, the corresponding definition of the same rule using a Java test case requires around 30 lines of imperative code.
 
 \begin{small}
 	\begin{lstlisting}[frame=single, language=DSL, caption={\it Example of a \shc declaration using our DSL}, label={code:dslExample}]
@@ -245,7 +298,6 @@ rule 1 {
   ], cnds = [ 
     (cond=NEG, type=DEPARTMENT, values=[14086, 14085, 1130, 995, 994, 993, 501]),
     (type=QUALIFICATION, values=[782, 756, 97]), 
-    (type=ARMS, values=[5392, 5393, 833, 729]), 
     (type=ROLE, values=[2, 12, 13, 15, 21, 46])
   ]
 }
@@ -286,7 +338,7 @@ Feature: QDM 757311
     | 6765796  | 24429   | 1051000025 | 2      |
     | 6765798  | 24429   | 1051000025 | 3      |
     | 6765798  | 11433   | 1051000025 | 9      |   
-    And the final result must be:
+    And the result must be:
     | codot      | amount |
     | 1020100013 | 74     |
     | 1020100017 | 74     |
