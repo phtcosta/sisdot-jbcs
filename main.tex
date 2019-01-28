@@ -301,7 +301,7 @@
 
 \begin{abstract} % abstract
 \justify
-In this paper we present the main design and architectural decisions to build an enterprise system that deals with the distribution of equipment to the Brazilian Army. The requirements of the system are far from trivial, and we have to conciliate the need to extract business rules from the source code (increasing software flexibility) with the requirements of not exposing the use of declarative languages to use a rule-based engine and simplifying the tests of the application. Considering these goals, we present in this paper a seamless integration of meta-programming and domain-specific languages. The use of meta-programming allowed us to isolate and abstract all definitions necessary to externalize the business rules that ensure the correct distribution of the equipment through the Brazilian Army unities. The use of a domain specific language simplified the process of writing automatic test cases related to our domain. To support the validation, a strategy of automatic generation of tests based on Property Based Testing was used, together with the realization of a focus group. Although our architecture targets the specific needs of the Brazilian Army, we believe that logistic systems from other institutions might also benefit from our technical decisions.
+In this paper we present the main design and architectural decisions to build an enterprise system that deals with the distribution of equipment to the Brazilian Army. The requirements of the system are far from trivial, and we have to conciliate the need to extract business rules from the source code (increasing software flexibility) with the requirements of not exposing the use of declarative languages to use a rule-based engine and simplifying the tests of the application. Considering these goals, we present in this paper a seamless integration of meta-programming and domain-specific languages. The use of meta-programming allowed us to isolate and abstract all definitions necessary to externalize the business rules that ensure the correct distribution of the equipment through the Brazilian Army unities. The use of a domain specific language simplified the process of writing automatic test cases related to our domain. To support the validation, a strategy of automatic generation of tests based on Property Based Testing was used, together with the realization of a focus group and analysis of collected metrics. Although our architecture targets the specific needs of the Brazilian Army, we believe that logistic systems from other institutions might also benefit from our technical decisions.
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -573,7 +573,7 @@ Table \ref{table:analiseComparacao} presents some descriptive statistics of the 
 	\label{fig:correlacao}
 \end{figure}
 
-Figure \ref{fig:geracao} shows the time necessary to generate QDMs for 5 different QCs. For each of them, 5 QDMS were generated, with different amounts of \callers, 400, 700, 1000, 1500 and 2000.
+Figure \ref{fig:geracao} shows the time necessary to generate QDMs for 5 different QCs. For each of them, 5 QDMs were generated, with different amounts of \callers, 400, 700, 1000, 1500 and 2000.
 
 \begin{figure}[!ht] \centering
 	\includegraphics[width=.45\textwidth]
@@ -663,7 +663,8 @@ Although the architecture discussed here considers the specific needs of the Bra
   The authors declare that they have no competing interests.
 
 \section{Author's contributions}
-   \textcolor{red}{ Text for this section \ldots}
+
+  Authors contributed equally to this work. 
 
 \section{Acknowledgements}
 We would like to thank the anonymous referees for the valuable comments and suggestions, which have led to several improvements of this paper. This work is partially supported by \textsc{PROMISE-EB}, a software modernization project involving the University of Bras\'{i}lia and the Brazilian Army.
