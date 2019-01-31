@@ -243,8 +243,8 @@
    addressref={aff1},                   % id's of addresses, e.g. {aff1,aff2}
    corref={aff1},                       % id of corresponding address, if any
    %noteref={n1},                        % id's of article notes, if any
-   email={pedro.costa@aluno.unb.br}   % email address
-]{\inits{PHT}\fnm{Pedro Henrique T.} \snm{Costa}}
+   email={phtcosta@gmail.com}   % email address
+]{\inits{PHT}\fnm{Pedro Henrique Teixeira} \snm{Costa}}
 \author[
    addressref={aff1},
    corref={aff1},
@@ -887,6 +887,13 @@ class HLRDslValidator extends AbstractHLRDslValidator {
 
 In the Listing \ref{code:xtend_quickfix} a simplified version of the customizations implemented, in Xtend, is presented for the quickfix of high-level rules duplication validation.
 
+
+
+
+% Durante o desenvolvimento da DSL foram gerados testes que são executados durante o processo de build da DSL. Foram criados testes, não exaustivos, para verificar o funcionamento do parser, das validações customizadas, e o comportamento básico das entidades modeladas. É possível desenvolver testes que validam o editor gerado na própria interface de usuário, executada em uma instância do eclipse. Os testes de User Interface (UI) não foram desenvolvidos neste projeto.
+
+During the development of DSL, tests were generated which are executed during the DSL build process. Non-exhaustive testes were performed to verify the parser operation, the custom validations, and the basic behavior of the modeled entities. It is possible to develop tests that validate the editor generated in the user interface itself, executed in an instance of eclipse. User interface (UI) tests have not been developed in this project.
+
 \begin{small}
 \begin{lstlisting}[frame=single, language=Xtend, caption={\it Quickfix Customization}, label={code:xtend_quickfix}]
 class HLRDslQuickfixProvider extends DefaultQuickfixProvider {
@@ -904,11 +911,6 @@ class HLRDslQuickfixProvider extends DefaultQuickfixProvider {
 }
 \end{lstlisting}
 \end{small}
-
-
-% Durante o desenvolvimento da DSL foram gerados testes que são executados durante o processo de build da DSL. Foram criados testes, não exaustivos, para verificar o funcionamento do parser, das validações customizadas, e o comportamento básico das entidades modeladas. É possível desenvolver testes que validam o editor gerado na própria interface de usuário, executada em uma instância do eclipse. Os testes de User Interface (UI) não foram desenvolvidos neste projeto.
-
-During the development of DSL, tests were generated which are executed during the DSL build process. Non-exhaustive testes were performed to verify the parser operation, the custom validations, and the basic behavior of the modeled entities. It is possible to develop tests that validate the editor generated in the user interface itself, executed in an instance of eclipse. User interface (UI) tests have not been developed in this project.
 
 Listing \ref{code:dslExample} presents a simple example of a \shc declaration using our DSL. The goal of this rule is to distribute the materials (defined in the list of materials construct) for \emph{operational} OMs (see the type construct) and militaries \emph{not working in the specified list of departments} with a set of qualifications and roles. While the definition of this rule using our DSL requires 12 lines of code, the corresponding definition of the same rule using a Java test case requires around 30 lines of imperative code.
 
