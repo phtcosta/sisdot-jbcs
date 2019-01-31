@@ -62,7 +62,7 @@
 \usepackage{enumerate}
 \usepackage{ragged2e}
 
-\usepackage{lstcustom}
+%\usepackage{lstcustom}
 
 
 
@@ -88,6 +88,197 @@
 
 %%% Put your definitions there:
 \startlocaldefs
+
+
+
+% This is a nice eclipse-like style for displaying Java with the
+% listings package.  I originally found it here
+%
+% http://trac.rtsys.informatik.uni-kiel.de/trac/rtsys/attachment/wiki/Latex/Listings/lstcustom.sty
+%
+% and modified it so that it was just for Java.  I also added some
+% more markup for Javadoc and anything else I could think of.
+%
+% Requires texlive-fonts-extra package for beramono.sty
+% 
+% Modified by Mark Royer
+%
+\usepackage{color}
+\usepackage{etoolbox}
+\usepackage{listings,multicol}
+\usepackage[T1]{fontenc}
+
+
+% beramono or luximono give very nice ttfamily fonts
+\usepackage[scaled=0.8]{beramono}
+%\usepackage[scaled=0.8]{luximono} 
+
+% Use the ttfamily font here will be used below
+\newcommand{\lstfontfamily}{\ttfamily}
+
+
+% Some useful colors...
+\definecolor{darkviolet}{rgb}{0.5,0,0.4}
+\definecolor{darkgreen}{rgb}{0,0.4,0.2} 
+\definecolor{darkblue}{rgb}{0.1,0.1,0.9}
+\definecolor{darkgrey}{rgb}{0.5,0.5,0.5}
+\definecolor{lightblue}{rgb}{0.4,0.4,1}
+
+\definecolor{stringColor}{rgb}{0.16,0.00,1.00}
+\definecolor{annotationColor}{rgb}{0.39,0.39,0.39}
+\definecolor{keywordColor}{rgb}{0.50,0.00,0.33}
+\definecolor{commentColor}{rgb}{0.25,0.50,0.37}
+\definecolor{javadocColor}{rgb}{0.25,0.37,0.75}
+\definecolor{jTagColor}{rgb}{0.50,0.62,0.75}
+\definecolor{eTagColor}{rgb}{0.50,0.62,0.75}
+\definecolor{lineNumberColor}{rgb}{0.47,0.47,0.47}
+
+
+% Here are the Javadoc tags and the version they were introduced based on the Java 7 docs here:
+%
+% http://docs.oracle.com/javase/7/docs/technotes/tools/solaris/javadoc.html#javadoctags
+%
+% Currently does not handle the tags that are surrounded by brackets for example {@code}.
+% 
+% @author 	1.0
+% {@code} 	1.5
+% {@docRoot} 	1.3
+% @deprecated 	1.0
+% @exception 	1.0
+% {@inheritDoc} 1.4
+% {@link} 	1.2
+% {@linkplain} 	1.4
+% {@literal} 	1.5
+% @param 	1.0
+% @return 	1.0
+% @see 		1.0
+% @serial 	1.2
+% @serialData 	1.2
+% @serialField 	1.2
+% @since	1.1
+% @throws 	1.2
+% {@value} 	1.4
+% @version	1.0
+
+
+% Inline tags not added to the list
+\def\jTags{@author, @deprecated, @exception, @param, @return, @see, @serial, @serialData, @serialField, @since, @throws, @version}
+
+% Here is standard annotations as listed here: 
+%
+% http://en.wikipedia.org/wiki/Java_annotation
+% 
+% @Override - Checks that the function is an override. Causes a compile warning if the function is not found in one of the parent classes.
+% @Deprecated - Marks the function as obsolete. Causes a compile warning if the function is used.
+% @SuppressWarnings - Instructs the compiler to suppress the compile time warnings specified in the annotation parameters
+%
+% Annotations applied to other annotations:
+%
+% @Retention - Specifies how the marked annotation is stored -- Whether in code only, compiled into the class, or available at runtime through reflection.
+% @Documented - Marks another annotation for inclusion in the documentation.
+% @Target - Marks another annotation to restrict what kind of java elements the annotation may be applied to
+% @Inherited - Marks another annotation to inherit features from a parent annotation
+
+\def\jAnnotations{
+    classoffset=1,
+    morekeywords={@Override, @Deperecated, @SuppressWarnings, @Retention, @Documented, @Target, @Inherited},
+    keywordstyle=\color{annotationColor},
+    classoffset=0
+}
+
+% Eclipse Task Tags
+\def\eTags{FIXME, TODO, XXX}
+
+
+%
+% Markup Javadoc code. If it's a Tag, bold it.
+%
+\newrobustcmd{\markupJavadocs}[1]{%
+\edef\mytok{\the\lst@token}%
+\renewcommand*{\do}[1]{%
+\ifdefstring{\mytok}{##1}%
+{\color{jTagColor}\bfseries\listbreak}%
+{}%
+}%
+{\color{javadocColor}%
+\expandafter\docsvlist\expandafter{\jTags}%
+\renewcommand*{\do}[1]{%
+\ifdefstring{\mytok}{##1}%
+{\color{eTagColor}\bfseries\listbreak}%
+{}%
+}%
+\expandafter\docsvlist\expandafter{\eTags}%
+#1}%
+}%
+
+%
+% Markup regular comment. If it's a Tag, bold it.
+%
+\newrobustcmd{\markupComments}[1]{%
+\edef\mytok{\the\lst@token}%
+\renewcommand*{\do}[1]{%
+\ifdefstring{\mytok}{##1}%
+{\color{eTagColor}\bfseries\listbreak}%
+{}%
+}%
+{\color{commentColor}%
+\expandafter\docsvlist\expandafter{\eTags}#1}%
+}%
+
+
+\lstdefinestyle{eclipse}{
+  basicstyle=\small\lstfontfamily,
+  emphstyle=\bfseries,
+  keywordstyle=\color{keywordColor}\bfseries,
+  commentstyle=\markupComments,
+  stringstyle=\color{stringColor},
+  numberstyle=\color{lineNumberColor}\lstfontfamily,
+  morecomment=[s][\markupJavadocs]{/**}{*/}, % For Javadoc comments
+  showstringspaces=false,
+  numbers=left
+%  ,frame=lines%shadowbox%trBL
+}
+
+\lstdefinestyle{black}{
+  basicstyle=\small\lstfontfamily,
+  numbers=left,
+  columns=fullflexible,
+  breaklines=true,
+  mathescape=true,
+  escapechar=\#,
+  tabsize=4,
+  frame=lines,
+  showstringspaces=false
+}
+
+% use proper tt font that supports bold printing, e.g. by
+% \usepackage{courier}
+\lstdefinestyle{seminar}{
+  basicstyle=\small\ttfamily,
+  numbers=left,
+  breaklines=true,
+  mathescape=true,
+  escapechar=\#,
+  tabsize=4,
+  showstringspaces=false
+}
+
+\lstset{
+  language=Java,%c++,
+  style=eclipse,
+  showspaces=false, 
+  numbers=left,
+  frame=lrtb,
+  captionpos=b,
+  breaklines=true,
+  % From http://tex.stackexchange.com/questions/116534/lstlisting-line-wrapping
+  postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{red}\hookrightarrow\space}}
+}
+
+\expandafter\lstset\expandafter{\jAnnotations}
+
+
+
 \lstdefinelanguage{Xtext}[]{Java}{
 	morekeywords={grammar, with, hidden, generate, as, import, returns, current, terminal, enum},
 	keywordstyle=[2]{\textbf},
@@ -366,16 +557,770 @@ In this paper we present the main design and architectural decisions to build an
 %%%%%%%%%%%%%%%%%%%%%%%%% start of article main body
 % <put your article body there>
 
-%%%%%%%%%%%%%%%%
-%% Background %%
-%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Introduction
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}\label{sec:Introduction}
+
+Planning and distributing equipment to an army force is a
+  challenging task that involves several steps. First, the
+  domain experts must specify all material that is relevant
+  for a given class (for instance, operational material, official army clothing,
+  and army ammunition). Second, domain experts must specify association 
+rules that relate military materials to abstract 
+organizational unities (e.g., departments, regiments,
+and military positions). Third, the domain experts should 
+execute the association rules for computing a list of expected
+equipment for the \emph{abstract military unit}; and the
+designation of the materials that must be
+actually distributed to the \emph{concrete military organizations}. Concrete and
+abstract military unities often differ because the first may suffer
+variations due to the inclusion and suppression of positions
+for its particular type of abstract organizational unit.
+
+Decision support systems are essential in this domain, given the importance and complexity of the processes related to the allocation of military employment materials. In particular, the rules used to predict military materials and equipment are not trivial, and implementing these rules directly in the source code makes the systems difficult to understand and maintain. This problem mostly occurs because the number of conditions that need to be expressed is proportional to the complexity of the organizational structure and the number of materials. In the case of an entire army force (such as the Brazilian Army), this number is noteworthy. In addition, a ``\emph{hard-coding}'' solution does not allow domain experts to trivially specify and test new derivation rules. For these reasons, it is preferably to implement these rules declaratively, using languages, tools, or libraries that
+support inference mechanisms.
+
+However, it is anything but easy to introduce either a logic language (e.g., Prolog or Datalog) or a specific library (such as Drools~\cite{browne2009}) in a complex enterprise system---particularly in environments whose whole ecosystem is well established and based on a set of constraints related to both language and libraries usage. Furthermore, these solutions require a steep learning curve, and thus it is worth to modularize and abstract their usage in the architecture of enterprise systems.
+
+In a previous work we describe the main design and architectural decisions we had taken to implement the mechanisms that assist decision makers to plan the distribution of military materials and equipment across the organizational structure of the Brazilian Army~\cite{phtcosta:sbcars}. These decisions aim to both (a) abstract the adoption of a business rule engine using {\bf meta-programming} and (b) allow domain experts to simulate the definition and testing of rules using a {\bf domain specific language} (DSL). Altogether, previously we contributed with:
+
+\begin{enumerate}[(a)] 
+
+\item A description of the use of generative programming techniques to raise the abstraction level related to the adoption of a logic programming language in the specification of rules for the 	distribution of materials and equipment through organizational unities.
+
+\item A report of an empirical evaluation of our design and architectural decisions, reinforcing that they fulfill not only the needs of the domain specialists, but also existing technical constraints. 	
+
+\end{enumerate}
+
+
+In this paper we extend our previous work with a more detailed description of our DSL and an in depth evaluation of our approach---considering the results of a property based testing execution. We complemented this evaluation through a qualitative assessment using the focus group method. The goal of this comprehensive assessment was to collect more evidence about how our approach fulfills the functional requirement of correctly distributing equipment to military units, by considering a more systematic testing technique and the opinion of domain experts responsible for planing the distribution of operational material in the Brazilian Army. 
+
+Although we discuss the distribution of materials and equipment for the military domain (which is far from trivial), we believe that the architectural decisions discussed here can be exploited to other logistics and endorsements scenarios in which it is also desirable to transparently introduce the support for rule based engines in enterprise systems.
+
+%\textcolor{red}{This paper is organized as follows. The Section \ref{sec:logistics} presents the concepts related to the domain of military logistics. Section \ref{sigelog} presents the concepts related to business rules and rule based engines and Section \ref{back} presents some background information related to generative programming—techniques that we use to support the design and implementation of our approach. Section \ref{sec:Methodology} explains the research methodology used. Section \ref{sec:architecture} presents the main design and architectural decisions we take to develop the mechanism responsible for the distribution of materials. In Section \ref{sec:case_study} we present the results of an empirical study that validate our approach. Section \ref{threats} presents the discussion and threats to validity this work. Finally, Section \ref{sec:related} and Section \ref{sec:conclusao} relate our work with the existing literature and present some final remarks.}
+
+This paper is organized as follows. The Section \ref{sec:logistics} presents the concepts related to the domain of military logistics. Section \ref{sigelog} presents some architectural constraints and Section \ref{back} presents some background information related to business rules, rule based engines and generative programming techniques that we use to support the design and implementation of our approach. Section \ref{sec:Methodology} explains the research methodology used. Section \ref{sec:architecture} presents the main design and architectural decisions we take to develop the mechanism responsible for the distribution of materials. In Section \ref{sec:case_study} we present the results of an empirical study that validate our approach. Section \ref{threats} presents the discussion and threats to validity this work. Finally, Section \ref{sec:related} and Section \ref{sec:conclusao} relate our work with the existing literature and present some final remarks.
 
 
 
-\input{introduction}
-\input{background}
-\input{methodology}
-\input{architecture} 
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Background
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Military Logistics Systems
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Military Logistic Domain}
+\label{sec:logistics}
+
+Military Logistics is the method used to implement military strategies and tactics that aim to gain competitive advantage~\cite{rutner2012}. Logistics is defined as the art of moving armies, as well as accommodating and supplying the military~\cite{prebilic2006}. Strategy and tactics provide the framework for conducting military operations, while logistics provides the means. In the context of this paper, we are more interested in the supplying aspects of logistics, which refers to the set of activities that deals with the  provisioning of the material of different classes (including vehicles, armaments, munition, uniform, and fuel) necessary to the military unities (including a rich organizational structure and a significant number of militaries). 
+
+In order to facilitate the administration and control of materials and equipment, the Brazilian Army uses a catalog system that is similar to one defined by the North Atlantic Treaty Organization (NATO)~\cite{otan2012}, which classifies items into groups and classes. The Brazilian Army catalog uses a classification that considers the \emph{type}, \emph{class}, and \emph{family} of the materials, ignoring some details (such as specific brands and suppliers). Other areas of the logistic domain consider more detailed information of the equipment. Several rules govern the identification of materials and equipment, to avoid duplication and simplify the process of decision making. A logistic system is the integrated set of organizations, personnel, principles, and technical standards intended to provide the adequate flow for supplying materials~\cite{brasil2003}. This is a complex system, and thus it must be designed as a set of modules. 
+
+In this paper we present the main design and architectural decisions related to one of the modules (SISDOT) of the \emph{Integrated Logistics System} (SIGELOG) of the Brazilian Army. SISDOT deals with the identification of the necessary materials and equipment (hereafter MEMs) for the organizational unities of the Brazilian Army. Each organizational unity is a combination of a set of \emph{generic organizations of specific types}, which describe the expected number of military unities of an organization (including armies, divisions, brigades, and so on). The goal of SISDOT is twofold. It first estimates the set of MEMs that should be assigned to the generic organizations, producing one of its main products (named QDM). Based on a set of QDMs, the second SISDOT's goal is to derive another estimate of MEMs that should be assigned to the concrete organizational unities (a QDMP). 
+
+Before generating a QDM, it is necessary to catalog all relevant MEMs to a given class of materials and then specify \callers (HLRs) that relate MEMs to the generic organizational unities, considering different elements of the structure---from the type of the unity and sub-unities to the qualifications of a soldier. That is, it is possible to elaborate a \shc that states that a military ambulance should be assigned to all \emph{drivers within medical unities}. Differently, it is also possible to state that an automatic rifle will be assigned to all \emph{sergeant that has been qualified as a shooter}. There is some degree of flexibility for writing these rules, that might be from two different kinds: rules that consider the entire structure of the Brazilian Army and rules that refer to specific elements of the organizational structure. The former details rules that are more specific for a set of military qualifications. The second allows the generation of rules that might be reused through different unities. 
+
+Deriving QDMs and QDMPs is not trivial and its complexity is due to several factors, including the organizational structure of the Brazilian Army, the number of existing functions and qualifications that must be considered, and the reasonable number of MEMs. The process might also vary depending on the class of the materials. Moreover, it is possible to specify the \callers in different ways, which might interact to each other leading to undesired results (e.g., the same material being assigned several times to a given soldier). 
+
+\section{SIGELOG Architectural Constraints}
+\label{sigelog}
+
+Due to the number of logical decisions, using an imperative language to implement the process of QDM generation 
+is not an interesting choice. However, the SIGELOG architecture reinforces the use of Java Enterprise Edition platform---so we had little flexibility to introduce a more suitable language (such as Prolog) to generate QDMs. Other constraints guided the architectural decisions of SISDOT, including:  
+
+\begin{itemize}
+	\item Maintenance: the set of languages and libraries are limited to those already used in the SIGELOG development.  
+	\item Performance: considering a total of 1000 \callers, the system must be able to generate a QDM in less than 10 seconds.
+	\item Testing: the technical decisions must not compromise the testability of the system, being expected a high degree of automated tests. 
+\end{itemize}
+
+To deal with the first constraint, we decided to use a meta-programming approach that derives \emph{low-level rules} for Drools (a rule based engine for Java) \emph{on the fly}, from a set of \callers represented as domain objects that must exist in a database. In this way, it is not necessary to understand the language used to specify rules in Drools.
+
+To this end, we generate all low-level rules every time a QDM is built.
+Although this approach increases flexibility and allows us to externalize the \emph{low-level rules}, we realized some undesired effect on the performance of the system. Accordingly, to deal with the second constraint, we use a cache mechanism and, based on the results of performance tests (as we discuss in Section~\ref{sec:case_study}), we have evidences that we are able to generate QDMs within the time
+limit constraints. For the third constraint, we implemented a DSL that simplifies the specification and execution of test cases using a property based approach. 
+
+
+\section{Technical Background}
+\label{back}
+
+
+In this section we
+introduce some technical background related to \emph{Rule Based Systems} and
+\emph{Drools}, \emph{Generative Programming} (including \emph{Metaprogramming},
+\emph{Template Engines}, and \emph{Domain Specific Languages}), and
+\emph{Property Based Testing}. This background might help the reader to
+understand the design and architectural decisions we take
+while implementing SISDOT.  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Rule Based Systems
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Rule Based Systems}
+\label{sec:rbs}
+The process for deriving QDMs consists of applying a set of business rules that relates MEMs to the organizational structure of the Brazilian Army. In this paper, we named this set of business rules as \callers. A business rule is a compact, atomic, and well-formed statement about an aspect of the business that can be expressed in terms that may be directly related to the business and its employees using a simple and unambiguous language that might be accessible to all stakeholders~\cite{graham2007business}. This type of structure is relevant for the organizations, as they continuously need to deal with complex scenarios. These scenarios consist of a large number of individual decisions, working together to provide a complex assessment of the organization as a whole \cite{salatino2016mastering}.
+
+Rule Based Systems (RBS), also known as production systems or expert systems, are the simplest form of artificial intelligence that help to design solutions that reason about and take actions from business rules (a feature that is interesting in the context of SISDOT), using rules such as knowledge representation~\cite{grosan2011}. Instead of representing knowledge in a declarative and static way as a set of things that are \emph{true}, RBS represent knowledge in terms of a set of rules that tells what to do or what to accomplish in different situations~\cite{grosan2011}. RBS consist of two basic elements: a \emph{knowledge base} to store knowledge and an \emph{inference engine} that implements  algorithms to manipulate the knowledge represented in the knowledge base~\cite{grosan2011,DBLP:books/daglib/0070547,gallacher1989}. The knowledge base stores facts and rules~\cite{DBLP:journals/cacm/Hayes-Roth85}. A fact is a static statement about properties, relations, or propositions~\cite{DBLP:journals/cacm/Hayes-Roth85} and should be something relevant to the initial state of the system~\cite{grosan2011}. A rule is a conditional statement that links certain conditions to actions or results \cite{abraham2005}, being able to express policies, preferences, and constraints. Rules can be used to express deductive knowledge, such as logical relationships, and thus support inference, verification, or evaluation tasks~\cite{DBLP:journals/cacm/Hayes-Roth85}.
+
+A rule ``if-then'' takes a form like \emph{``if x is A then take a set of actions''}. The conditional part is known as antecedent, premise, condition, or left-hand-side (LHS). The other part is known as consequent, conclusion, action, or right-hand-side (RHS)~\cite{grosan2011,abraham2005}. Rule-based systems works as follows~\cite{grosan2011}: it starts with a knowledge base, which contains all appropriate knowledge coded using ``if-then'' rules, and a working memory, which contains all data, assertions, and information initially known. 
+
+The system examines all rule conditions (LHS) and determines a subset of rules whose conditions are satisfied, based on the data available at the working memory. From this information set, some of the rules are triggered. The choice of rules is based on a conflict resolution strategy. When the rule is triggered, all actions specified in its \texttt{then} clause (RHS) are executed. These actions can modify the working memory, the rule base itself, or take whatever action that the system programmer decides to implement. This \emph{trigger rule loop} continues until a termination criterion is met. This end criterion can be given by the fact that there is not any additional rule whose conditions are satisfied or a rule is triggered whose action specifies that the program should be finished.
+
+Drools is an example of a business logic integration platform (BLiP) written in the Java programming language and that fits some requirements of SISDOT (in particular, its integration with Java and the Wildfly application server). We use Drools as the \emph{rule-based system} in the QDM generation. However, to abstract the use of a RBS, we generate the Drools rules using a meta-programming approach, a specific technique for \emph{generative programming}. 
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Generative Programming
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Generative Programming}
+\label{sec:gp}
+
+Generative Programming (GP) is related to the design and implementation of software components that can be combined to generate specialized and highly optimized systems, fulfilling specific requirements~\cite{DBLP:phd/dnb/Czarnecki99}. With this approach, instead of developing solutions from scratch, domain-specific solutions are generated from reusable software components \cite{arora2009}. GP is applied on the manufacturing of software products from components in a system in an automated way (and within economic constraints), i.e., using an approach that is similar to that found in industries that have been producing mechanical, electronic, and other goods for decades \cite{barth2002}. The main idea in GP is similar to the one that led people to switch from Assembly languages to high-level languages. 
+
+In our context, we use GP to deal with two different aspects of SISDOT. First, we raise the level of abstraction by automatically generating low-level Drools rules from an existing set of \callers (previously defined by the domain experts). This is a \emph{meta-programming} approach based on template engines---we use a template to generate a set of facts and rules (which are the fundamental mechanisms of logic programming) from domain objects. We also raise the level of abstraction to assist developers in the specification and execution of test cases, using a domain specific language and a set of custom libraries and tools.  
+
+
+\subsubsection{Metaprogramming and Template Engines}
+
+Metaprogramming concerns to the implementation of programs that generate other programs. In the context of SISDOT, we use a metaprogramming technique to generate programs that are interpreted by Drools. The main goal is to abstract the use of a specific language for implementing the \emph{low-level rules} used to generate QDMs. There are many different approaches for metaprogramming, including preprocessing, source to source transformations, and template engines. A template engine is a generic tool for generating textual output from templates and data files. They can be used in the development of software that requires the automatic generation of code according to specific purposes~\cite{benato2017}. 
+
+The need for dynamically generated web pages has led to the development of numerous template engines in an effort to make web application development easier, improve flexibility, reduce maintenance costs, and enable parallel encoding and development using HTML like languages. In addition to being widely used in dynamic web page generation, templates are used in other tasks, being one of the main techniques to generate source code from high level specifications. More recently, languages such as Clojure, Ruby, Scala, and Haskell adopted the use of template and \emph{quasiquote} mechanisms as a strategy for code reuse and program generation (some of them considering type systems). A template is a text document that combines placeholders and linguistic formulas used to describe something in a specific domain~\cite{segura2017}. 
+
+In this work we use the FreeMarker template engine, which is an open-source software designed to generate text from templates~\cite{radjenovic2009}. FreeMarker was chosen for several reasons, such as: it follows a general purpose model; it is faster than other template engines; it supports shared variables and model loaders; and it is possible to load FreeMarker templates at runtime, without the need to (re)compile the application~\cite{benato2017,parr2006}.
+
+
+\subsubsection{Domain Specific Languages}
+
+A language is a set of valid sentences, serving as a mechanism for expressing intentions \cite{parr2010}. Creating a new language is a time-consuming task, requires experience, and is usually performed by engineers specialized in languages construction~\cite{karsai2014}. To implement a language, one must construct an application that reads sentences and reacts appropriately to the phrases and input symbols it discovers. However, the need for new languages for many growing domains is increasing, as well as the emergence of more sophisticated tools that allow software engineers to define a new language with acceptable effort. As a result, a growing number of DSLs are being developed to increase developer productivity within specific domains~\cite{karsai2014}. 
+
+
+Domain Specific Languages (DSL) are specification languages or programming languages with high level of abstraction, simple and concise \cite{raja2010}, focused on specific domains, and are designed to facilitate the construction of applications, usually declaratively, with limited expressiveness lines of code, which solve these specific problems \cite{neeraj2017}. A DSL is a computer language of limited expressiveness, through appropriate notations and abstractions, focused and generally restricted to a specific problem domain \cite{fowler2013,vanDeursen2000}. DSLs have the potential to reduce the complexity of software development by increasing the level of abstraction for a domain. According to the application domain, different notations (textual, graphical, tabular) are used \cite{pfeiffer2008}.
+
+
+In this work we used Xtext ~\cite{eysholdt2010} (a language workbench) to implement a DSL that helps developers to specify and execute test cases related to the process of QDM generation. The main rationale to building this DSL was the significant costs related to specifying \callers (particularly during acceptance testing).
+Our DSL integrates with a \emph{property based testing} infrastructure that
+is able to generate different configurations of \emph{military unities}. We use
+this infrastructure to increase our confidence about the generation process of
+QDMs and support regression testing.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Software Testing
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Property Based Software Testing}
+\label{sec:test}
+
+% Conforme discutido anteriormente, o uso de uma infraestrutura baseda em Property-based Testing (PBT) consiste em outra decisão arquitetural relevante para o SISDOT. PBT tornou-se uma técnica padrão para melhorar a qualidade do \textit{software} em uma ampla variedade de linguagens de programação \cite{lampropoulos2017}. PBT é uma técnica de teste de caixa-preta, semi-automática, de alto nível na qual, ao invés de escrever um conjunto rico testes de unidade manualmente, o testador especifica propriedades gerais que o sistema sob teste (System Under Testing - SUT) deve satisfazer. A partir dessas propriedades, geradores de dados produzem entradas aleatórias bem distribuídas para as partes do sistema que serão testadas. As propriedades são então verificadas a partir de um conjunto mais rico de entradas, que dificilmente seria explorado manualmente. Como em todas as técnicas de testes aleatórios, a chance de encontrar um erro e a confiança no SUT aumentam com o número de testes gerados \cite{loscher2018}. 
+
+As discussed earlier, another relevant architectural decision of
+SISDOT is the use of a Property Based Testing (PBT) infrastructure.
+PBT is a model-based testing approach that is getting a lot of attention.
+Its main focus is on automatically generating test cases from specifications in the form of high-level
+properties~\cite{claessen2000,earle2014,castro2015}. That is, PBT tools and libraries (such as Haskell QuickCheck,
+JUnit QuickCheck, C Theft and Scala Test) allow developers and testers to write
+program specifications in the form of properties that must be satisfied. From these specifications,
+these tools automatically generate input data, execute the test cases, and verify the results of a
+large number of random scenarios~\cite{castro2015}.
+
+
+%% PBT has become a standard technique for improving the quality of software in a wide variety of programming languages \cite{lampropoulos2017}. PBT is a high-level, semi-automatic, black-box testing technique in which, rather than writing a rich set of unit tests manually, the tester specifies general properties that the System Under Testing (SUT) must meet. From these properties, data generators produce well-distributed random inputs for the parts of the system that will be tested. The properties are then checked from a richer set of entries, which would hardly be exploited manually. As with all random testing techniques, the chance of finding an error and confidence in SUT increases with the number of tests generated \cite{loscher2018}.
+
+% PBT é uma técnica que está recebendo muita atenção recentemente, é fortemente relacionada a testes baseados em modelos, mas onde o foco está na geração de testes individuais automaticamente a partir de especificações na forma de testes de propriedades de alto nível \cite{earle2014}. PBT é uma estratégia que leva a uma família de ferramentas de teste automáticas. Geralmente, são ferramentas para geração e execução de casos de teste com base nas especificações. Essas ferramentas são tipicamente implementadas como bibliotecas, permitindo que o desenvolvedor / testador anote as especificações do programa, usando uma linguagem de programação de sua escolha, na forma de propriedades que devem ser satisfeitas. A partir dessas especificações, as ferramentas geram, executam e verificam automaticamente os resultados de um grande número de casos de teste aleatórios para verificar se as propriedades são mantidas \cite{castro2015}. Existe uma variedade de ferramentas PBT que surgiram ao longo dos anos inspiradas no QuickCheck original para Haskell \cite{claessen2000}, como: JUnit-QuickCheck para Java, theft para C, ScalaTest and ScalaCheck para Scala \cite{chepurnoy2018}. 
+
+
+% Ao contrário dos métodos de teste convencionais, em que o comportamento de um programa é testado apenas em alguns casos pré-determinados, o PBT enfatiza a definição de propriedades e, em seguida, testa sua validade em relação a pontos de dados amostrados aleatoriamente. Como o teste baseado em propriedade (PBT) usa um pequeno número de pontos de dados amostrados aleatoriamente, ele ainda fornece apenas uma resposta aproximada à questão de saber se uma propriedade é satisfeita em todos os pontos de dados. No entanto, pode fornecer mais confiança do que o teste unitário convencional, porque os pontos de dados amostrados aleatoriamente podem cobrir casos problemáticos que não foram previstos pelos desenvolvedores \cite{chepurnoy2018}.
+
+%% Unlike conventional test methods, where the behavior of a program is tested only in a small number of cases,
+%% the PBT approach emphasizes the definition of properties and then tests its validity against randomly sampled data points. Because the property-based test (PBT) uses a small number of randomly sampled data points, it still provides only a rough answer to the question of whether a property is satisfied at all data points. However, it can provide more confidence than the conventional unit test, because randomly sampled data points can cover problematic cases that were not anticipated by developers \cite{chepurnoy2018}.
+
+% PBT apresenta três vantagens sobre o teste manual \cite{yatoh2014}. Primeiro, escrevendo apenas propriedades e omitindo dados de teste, os desenvolvedores podem reduzir significativamente o tamanho e complexidade do código de teste. Segundo, ao executar testes baseados em propriedade contra entradas geradas aleatoriamente, os desenvolvedores podem encontrar mais \textit{bugs} do que testes manuais, pois os testes baseados em propriedade podem verificar propriedades com muitas entradas, com isso, a chance de encontrar \textit{bugs} é aumentada. Finalmente, as propriedades podem ser vistas como uma especificação formal leve do programa. Escrever especificações formais promove o entendimento da especificação e da implementação e é eficaz para compartilhar as especificações entre a equipe. É importante que essa especificação seja executável. Essa especificação executável pode evitar incompatibilidade entre especificação e implementação, o que geralmente é o caso se a especificação for gravada em um documento separado.
+
+PBT has three advantages over conventional testing approaches~\cite{yatoh2014}. First, by writing only properties and omitting test data, developers can significantly reduce the size and complexity of the test code. Second, when running property-based tests against randomly generated input data, the likelihood to find bugs might increase. Lastly, the approach can be understood as a lightweight formal specification of the program, which might help to further understand the system. Here we particularly benefited from the first and second expected outcomes of using PBT.  
+
+  
+% O estudo realizado por \cite{elberzhager2012} identifica abordagens existentes para reduzir o esforço de teste sem que o software final perca qualidade. A maioria dos artigos analisados, cerca de 50\%, discute a automação de testes. Na literatura são descritas diversas técnicas para geração de casos de testes e dados para testes, como as apresentadas em \cite{hooda2014}, \cite{mahadik2016}, \cite{elghondakly2016}, \cite{ali2010}, \cite{harman2010}, \cite{sahoo2016}, \cite{khurana2017}.
+
+%% The study by \cite{elberzhager2012} identifies existing approaches to reduce the test effort without the final software losing quality. Most articles reviewed, about 50\%, discuss automation testing. In the literature, several techniques are described for the generation of test cases and data for tests, such as those presented \cite{hooda2014}, \cite{mahadik2016}, \cite{elghondakly2016}, \cite{ali2010}, \cite{harman2010}, \cite{sahoo2016}, \cite{khurana2017}.
+
+%% {\color{red}talvez esse primeiro paragrafo possa ser o primeiro paragrafo da secao 4.3}
+
+% Para este estudo foi selecionada a técnica PBT devido às características dos chamadores, que diferem entre si basicamente pelas suas propriedades declaradas e seus valores. Uma ferramenta bastante conhecida, o Junit QuickCheck \footnote{https://pholser.github.io/junit-quickcheck/site/0.8.2/index.html}, foi levada em consideração para uso. Embora exista uma documentação para esta ferramenta não foi possível encontrar exemplos que tornassem sua utilização mais clara no caso do SISDOT. Além disso, pode ser difícil entender os artefatos gerados em tempo de execução{\color{red}, pois não seria possível saber exatamente quais valores de propriedades estão sendo testados, a não ser pela leitura do log de execução.} Foram encontradas outras ferramentas, como: jqwik \footnote{https://jqwik.net/} e QuickTheories \footnote{https://github.com/ncredinburgh/QuickTheories}, mas que também incorrem nos mesmos problemas, mesmo que não tenham sido analisadas mais a fundo como o Junit QuickCheck.
+
+In particular, we decided to use a PBT technique due to the characteristics of the \callers,
+which differ by their properties and values. A manual approach for generating different combinations
+of properties and value is time consuming. We first considered the use of Junit QuickCheck.\footnote{https://github.com/pholser/junit-quickcheck} However, due to limited documentation, we could not find examples that would make clear its use in the case of SISDOT.
+Furthermore, we need control on the procedures for generating data,
+and we found that implementing
+our own infrastructure would be more feasible than trying to adapt the Junit QuichCheck to this end. Other tools were considered as well
+(such as: jqwik \footnote{https://jqwik.net/} and QuickTheories \footnote{https://github.com/ncredinburgh/QuickTheories}),
+but we found that they would also incur in the same problems.
+
+% O PBT é uma abordagem poderosa para testes de software, mas pode ser tão desafiadora para desenvolvedores que a usam pela primeira vez quanto para os stakeholders não técnicos entenderem, em geral, os artefatos gerados. Abordagens ágeis para o desenvolvimento de software, como a utilizada no desenvolvimento do SISDOT, demonstram que o envolvimento de todas as partes interessadas no ciclo de vida do software é um fator-chave para o sucesso do projeto. Especificamente, permitir que clientes ou usuários validem os requisitos de software por inspeção direta ou mesmo interação com artefatos de garantia de qualidade de software, como casos de testes e conjunto de testes, traz benefícios efetivos \cite{castro2016}. Neste trabalho, para facilitar o envolvimento dos stakeholders, foi desenvolvida uma solução própria, em detrimento às ferramentas existentes, baseada em PBT, que gera, além de outros artefatos, especificações de teste baseadas no Cucumber \cite{wynne2017}, possibilitando o entendimento de todos os envolvidos sobre o que está sendo testado.
+
+%% PBT is a powerful approach to software testing, but it can be so challenging for developers who use it for the first time as non-technical stakeholders generally understand the artifacts they generate. Agile approaches to software development, such as that used in the development of SISDOT, demonstrate that engaging all stakeholders in the software life cycle is a key factor for project success. Specifically, allowing customers or users to validate software requirements by direct inspection or even interaction with software quality assurance artifacts, such as test cases and test suite, brings effective benefits \cite{castro2016}. In order to facilitate stakeholder engagement, a proprietary solution was developed over PBT-based tools that generate, in addition to other artifacts, test specifications based on Cucumber \cite{wynne2017}, allowing the understanding of all involved about what is being tested.
+
+%% {\color{red}In the next section we present more details about our architectural decisions and implementation of our metaprogramming and DSL approach, which deals with the generation and test of QDMs.}
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Methodology
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Methodology}\label{sec:Methodology}
+
+% O desenvolvimento do SISDOT deu-se no âmbito do projeto PROMISE-EB (Projeto de Pesquisa para Validação de Práticas e Métodos de Desenvolvimento de Software para o Exército Brasileiro). Entre as atividades deste projeto estava o desenvolvimento do SISDOT, a partir de um sistema já existente, escrito na linguagem Delphi e voltado para o ambiente desktop.
+
+The development of SISDOT took place within the scope of the project PROMISE-EB (Project of Research for Validation of Practices and Methods of Software Development for the Brazilian Army). Among the activities of this project was the development of SISDOT, from an existing system, written in the Delphi language and aimed at the desktop environment.
+
+% Como não foi possível utilizar o sistema legado, foi realizada uma engenharia reversa a partir do manual do usuário deste sistema, já que sistemas legados costumam ser uma das fontes de informação essenciais para a análise de domínio de aplicações. Além disso, foi realizado diversas interações com os usuários do sistema, os quais possuiam um domínio abrangente do sistema legado. A Engenharia de Domínio (ED) se preocupa com a identificação e modelagem de características comuns e variáveis em aplicações de um dado domínio, gerando como resultado modelos de domínio (por exemplo, casos de uso de domínio, classes do domínio e etc.), com o apoio oferecido por processos de ED que, geralmente, compreendem as fases de análise, projeto e implementação foi possível identificar as funcionalidades e regras de negócio do sistema legado (SISDOT).
+
+As it was not possible to use the legacy system, reverse engineering was done from the user manual of this system, since legacy systems are often one of the essential sources of information for the application domain analysis. Furthermore, a number of interactions were made with the users of the system, which had a comprehensive domain of the legacy system. Domain Engineering (ED) is concerned with the identification and modeling of common and variable characteristics in applications of a given domain, resulting in domain models (for example, domain use cases, domain classes and etc.) with the support offered by ED processes that generally comprise the phases of analysis, design and implementation, it was possible to identify the functionalities and business rules of the legacy system (SISDOT).
+
+% O desenvolvimento do sistema foi baseado no processo de desenvolvimento ágil, onde em cada sprint eram realizadas as fases de análise, projeto, implementação, teste e implantação. Na fase de análise foi realizado o levantamento de requisitos a partir das informações contidas no manual de uso do sistema legado e complementadas pelos usuários do sistema. Na fase de projeto os modelos de análise foram refinados visando a construção ou adaptação da arquitetura do domínio. Os modelos da fase de projeto quase sempre eram informais, exceto em alguns casos mais complicados, com a intenção de dar uma visão geral do que deveria ser desenvolvido em determinado sprint. Na fase de implementação foram escritos os códigos necessários, juntamente com seus casos de teste. Ao fim do sprint era realizada a implantação no ambiente de homologação, permitindo a utilização por parte dos usuários e seus respectivos feedbacks. Essas iterações permitiram o refinamento das funcionalidades e as possíveis alterações necessárias para a execução das funcionalidades.
+
+The development of the system was based on the agile development process, where in each sprint the phases of analysis, design, implementation, testing and deployment were performed. In the analysis phase, requirements were surveyed based on the information contained in the legacy system user manual and complemented by the users of the system. In the design phase the analysis models were refined aiming at the construction or adaptation of the architecture of the domain. The design phase models were almost always informal, except in some cases more complicated, with the intention of giving an overview of what should be developed in a given sprint. In the implementation phase the necessary codes were written along with their test cases. At the end of the sprint, the deployment was carried out in the homologation environment, allowing the users to use and return their respective feedbacks. These iterations allowed the refinement of the functionalities and the possible changes necessary for the execution of the functionalities.
+
+% Durante a modelagem das entidades referentes ao domínio da high level rule, foi identificada a semelhança entre a definição de um high level rule e uma regra do tipo ``se-então''. Como os high level rules servem de base para a geração de QDMs foi identificado que estes poderiam ser gerados automaticamente por um rule engine, a partir de um conjunto de regras ``se-então'', os high level rule. Com isso, foi então escolhido o Drools como rule engine, uma vez que: a equipe já possuia conhecimento sobre a ferramenta, a existência de uma linguagem que permitiria a conversão, com facilidade, de high level rule para esta linguagem, vasta documentação e uma comunidade expressiva, além de ser desenvolvida por uma empresa conceituada no mundo do desenvolvimento de software, a RedHat, hoje parte da IBM.
+
+During the modeling of entities related to the high level rule domain, the similarity between the definition of a high level rule and a ``if-then'' rule was identified. As high level rules serve as a basis for the generation of QDMs, it has been identified that they could be generated automatically by a rule engine, from a set of ``if-then'' rules, the high level rule. Based on that, Drools was chosen as a rule engine, since: the team already had knowledge about the tool, the existence of a language that would allow the conversion, with ease, of high level rule for this language, extensive documentation and a expressive community, in addition to being developed by a reputed company in the world of software development, RedHat, now part of IBM.
+
+% Os testes iniciais para a geração de QDMs exigiam a declaração de high level rule na linguagem Java, o que era, na maioria dos casos, muito moroso, exigindo dezenas de linhas de código, mesmo utilizando alguns métodos auxiliares que aumentavam o reuso. Além disso, a definição do resultado esperado, para comparar com o QDM gerado, necessitava da presença do usuário, para indicar/verificar os resultados reais. Quando não era possível a presença do usuário, o testador devia analisar manualmente o QC para identificar os resultados esperados, e declará-los utilizando a linguagem Java para a conferência no final da execução dos testes. Estes foram os fatores essenciais que levaram ao desenvolvimento de uma DSL, que visava facilitar a declaração de high level rule, e do uso da ferramenta cucumber para a definição de casos de teste. Apesar disso, os testes ainda eram definidos de forma manual, embora já houvesse um ganho expressivo de produtividade, e ainda necessitavam do usuário ou de uma análise do QC para definição dos resultados esperados. Assim, foi desenvolvida uma solução para a geração automática de testes e para a geração de QDMs, onde eram gerados automaticamente tanto o high level rule quanto o resultado esperado, assim como a definição do caso de teste em cucumber.
+
+The initial tests for generating QDMs required the declaration of high level rules in the Java language, which was, in most cases, very time-consuming, requiring dozens of code lines, even using some auxiliary methods that increased reuse. Furthermore, the definition of the expected result, to compare with the generated QDM, required the presence of the user to indicate/verify the actual results. When user presence was not possible, the tester should manually analyze the QC to identify expected results, and declare them using the Java language for the conference at the end of the test run. These were the key factors that led to the development of a DSL, which aimed to facilitate the declaration of high level rule, and the use of the cucumber tool for the definition of test cases. Despite this, the tests were still manually defined, although there was already an expressive gain in productivity, and they still needed the user or a QC analysis to define the expected results. Thus, a solution was developed for the automatic generation of tests and for the generation of QDMs, where both the high level rule and the expected result were generated automatically, as well as the definition of the test case in cucumber.
+
+%\begin{figure}[!ht] %\centering
+%	\includegraphics[scale=0.40]{img/processo.png}
+%	\caption{Tests Generation Process} 
+%	\label{fig:process}
+%\end{figure}
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Architecture
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Architectural Decisions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Architectural Decisions}
+\label{sec:architecture} 
+
+SISDOT is based on the client-server architectural style (according to a typical Java enterprise application), where the components interact to each other by requesting services from other components~\cite{clements2011documenting}. SISDOT is also organized into logical groups of components (known as tiers)---a strategy often used in the client-server architectural style. The multi-tier architectural pattern can be classified as a \emph{component and connector} pattern, depending on the criterion used to define the tiers~\cite{bass2013software}. Indeed, there are several criteria, such as component type, sharing of the execution environment, 
+and so on~\cite{clements2011documenting}.
+
+The multi-tier pattern also induces some topological constraints that govern how the components might interact with other components. Specifically, connectors might only exist between components of the same tier or that reside in an adjacent tier~\cite{clements2011documenting}. In addition, according to Bass et al., the organization of a system using tiers supports software maintenance, facilitates the definition of security policies, and might increase the performance, availability, and modifiability of the systems~\cite{bass2013software}. 
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Runtime Architectural Description for QDM Generation
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Runtime Architectural Description for QDM Generation}
+
+In order to further detail and illustrate the SISDOT architecture, and the main architectural decisions to address the constraints introduced in Section~\ref{sec:logistics}, here we present a scenario that refers to the generation of QDMs using a runtime architectural description, whose components, relationships, and interactions are illustrated in Figure~\ref{fig:runtime_qdm}). 
+
+\begin{figure}[!ht] %\centering
+    \hspace*{-0.55cm}
+	\includegraphics[scale=0.54]{img/runtimeView_qdm.png}
+	\caption{Runtime view of the architecture} 
+	\label{fig:runtime_qdm}
+\end{figure}
+
+\emph{Considering the user interaction}, a previously authenticated specialist on the distribution of equipment throughout the Brazilian Army, using her web browser, requests the web page that allows the generation of QDMs (one of the main products of SISDOT). 
+After selecting the \emph{generic organizational unity} for which a QDM would be generated, the system sends a request to the server. The client tier is responsible for these actions. The request is then received by a component of the presentation tier, more specifically by a \emph{managed bean} that works as a \emph{front controller} (in this case, a JSF controller). 
+
+This controller validates the request data, before sending a new request to the business tier. In the business tier, the service 
+that implements the business rules related to the QDM domain object is invoked to start the QDM generation process, which includes actions to (a) transform \callers into the \emph{low-level rules} specified using the Drools Rule Language (DRL), (b) execute these rules to instantiate a business object that represents a QDM, and (c) save this object in the persistence layer (a relational database). 
+
+This process for generating a QDM starts by retrieving a list of previously registered \callers. An \shc, regardless of its type (either based on the full structure of the organization or based on its components), is related to one or more \emph{military materials / equipment} (MEMs) and defines the respective amount that should be assigned to a military unit (which ranges from an organization, a center, a department, a brigade, or even a military function or qualification of a soldier). 
+
+A high-level rule has one or more distribution rules. Each rule has a type, a value, and an associated description. For example, a rule for a department type has the value of the department identifier and the description of the department name. For a better use of the database, avoiding the definition of numerous columns that would inevitably be null for several rule types, we decided to persist the distribution rules of an \shc using JSON (JavaScript Object Notation), which is converted back to an object when it is retrieved. The set of these rules defines exactly who should receive the MEMs specified by the \shc.
+
+One of the factors that motivated the use of a rule based engine was the similarity between \callers and the ``if-then'' rules of these mechanisms.  %whose essential structure is shown in Listing~\ref{code:drlStructure}.
+An \shc has a set of conditions that fits the conditional part of a rule (``if'') and has a set of actions (``then'') that, in this case, trigger the distribution of MEMs throughout the expected military unities.
+
+The list of retrieved \callers contains only Java objects. In order to be able to use the rule engine in a transparent way for the end users (and also for developers in future maintenance scenarios), we decided to use a meta-programming approach, translating these objects into a set of rules (a program in logic programming) that might be used by a rule-based engine. As mentioned before, we decided to use the \emph{Drools rule-based engine} in the context of SISDOT (Figure \ref{fig:runtime_qdm}), mostly because of its integration capabilities with both JEE systems and the Wildfly application server. Accordingly, the \callers are translated into DRL rules (Listing~\ref{code:drl} presents an example of a \emph{low-level Drools rule}). To this end, we use a template engine (FreeMaker) to implement this particular transformation (Figure \ref{fig:runtime_qdm}), using a template that contains the required \emph{markups} for transforming \shc into \emph{low-level} Drools rules. That is, for each \shc, the template engine populates the template, resulting in a DRL rule consistent with the converted \shc.
+% A code snippet of the template used for DRL generation can be seen in Appendix A. 
+
+\begin{lstlisting}[frame=single, float=*t, language=DRL, caption=Example of a \emph{low-level Drools rule}, label={code:drl}]
+rule "HLR 1"   	
+  when
+    $qc: QuadroDeCargosVO( 
+       (operational == OPERATIONAL || operational == NOT_OPERATIONAL)
+       , natureId not in (50, 51)
+       , valueId in (23, 41, 90, 50, 42, 31, 21, 32, 20, 30, 40) 
+    )	
+    $roles: List( size > 0 ) from accumulate ( 
+      $dep: DepartmentVO(
+         depId not in (14086, 1130)
+      ) from $qc.deps 
+      and
+      $role: RoleVO(
+         function == "ROLE"
+         , roleId not in (364, 539, 121, 2205, 528, 2204, 539) 
+         , rankId in (24, 23, 44, 22, 42) 
+         , armsId not in (1055, 10, 833, 5308, 5393, 729, 5110, 15, 5112, 5390, 12) 
+      ) from $dep.roles 
+      and  		
+      QualificationVO(
+         code not in ("782", "756", "793", "768", "765", "751", "921", "749", "767", "748")
+      ) from $role.qualifications
+      and
+      ObservationVO(
+         code in ("40D","40K")
+      ) from $role.observations;
+	
+      collectList( $role )
+    )	 		
+  then		 
+    for(int i=0; i < $roles.size(); i++){       	
+      RoleVO c = (RoleVO) $roles.get(i);
+      helper.add(1051000007, c.getDepartmentId(), c.getRoleId());
+    }
+end
+\end{lstlisting}
+
+The RHS of the Drools rule of Listing~\ref{code:drl} iterates over all selected military roles (that satisfy the constraints of the LHS). We use a helper class to assign the equipment id (in this case a \emph{rifle} whose id is 1051000007) to the individual roles. Besides providing means to populate a QDM, this helper class also checks some constraints related to the QDM domain model. 
+
+%\begin{figure}[!ht] \centering
+%	\includegraphics[width=.48\textwidth]{img/artigo_template.jpg}
+%	\caption{\it Freemarker template for generating DRL} 
+%	\label{fig:template}
+%\end{figure}
+
+
+A QDM is generated for a generic organizational unity (hereafter QC, from \emph{Quadro de Cargos} in Portuguese), selected by the user on the client tier. Therefore, the user-specified QC must be retrieved from the Brazilian Army's enterprise database through a specific Data Access Object (DAO) in the data tier~\cite{alur2003}. From the list of DRL rules, created based on existing \callers, the rule engine is instantiated and these rules are compiled, so that they can be triggered by Drools. The QC domain object is then inserted into the working memory as a fact, an information that is always considered true. The rules are only executed when their conditions are satisfied, based on the specified QC organizational structure. When a rule is valid, that is, it has been activated and the \emph{Left Hand Side} (LHS) conditions are valid, the QDM is populated with the MEMs specified in the \emph{Right Hand Side} (RHS) of the rules. Therefore, we generate a complete QDM object after verifying all valid rules (previously registered in the database) for the selected QC. 
+
+After generating a QDM domain object, it is saved on the database and we let the domain expert know of the success of the operation using a simple user interface message. The domain expert can then perform the necessary operations on the generated QDM, including a workflow involving  its edition, homologation, and validation.  
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% A Domain Specific Language for testing QDM Generation
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{A Domain Specific Language for testing QDM Generation}
+
+As explained before, to generate a QDM, a set of \callers must be previously declared. This is a time-consuming task, particularly when using the interface of the system. In order to facilitate the definition of the \callers used in the automated test scripts, we decided to implement \hlrdsl---a DSL (Domain Specific Language) that enables us to specify \callers in a clear, objective, and declarative way (and most important, without using the interface of the SISDOT system). 
+
+
+
+\begin{lstlisting}[frame=single, float=*t, language=Xtext, caption={\it Xtext grammar defining the DSL structure}, label={code:gramatica}]
+grammar br.unb.cic.sisdot.chamador.HLRDsl with org.eclipse.xtext.common.Terminals
+        
+generate hlrdsl "http://www.unb.br/sisdot/hlrdsl"
+
+Model:
+  rules += Rule*;
+
+Rule:
+  'rule' code = INT '{'
+    ('type' '=' type=OmType ',')?
+    'materials' '=' '['items+=Item (',' items+=Item)*'],'
+    'cnds' '=' '['cnds+=Condition (',' cnds+=Condition)*']'
+  '}';
+
+Item: 
+  '(' codot=STRING (':' name=STRING)? ':' amount=INT ')';
+
+Condition:
+  '(' ('cond' '=' cond=ConditionType ',')?
+    'type' '=' type = RuleType ','
+    'values' '=' '[' values+=STRING (',' values+=STRING)* ']'
+  ')';
+
+enum OmType: BOTH | OPERATIONAL | NOT_OPERATIONAL;
+enum ConditionType: AFF | NEG;
+enum RuleType: NATURE | SUB_NATURE | VALUE | DEPARTMENT | ARMS | ROLE_QC | SUB_CIRCLE | RANK | ROLE | QUALIFICATION | OBSERVATION ;
+\end{lstlisting}
+
+We implemented \hlrdsl  using Xtext, which generates plugins that allow code editing in both Eclipse and IntelliJ, plus an editor that can be embedded in a web application. This way, a developer writing test scripts might use \hlrdsl to take advantages of the functionality provided by these plugins. To implement a DSL using Xtext, it is first necessary to declare a grammar expressed using a syntax similar to ANTLR~\cite{parr2013}. Listing~\ref{code:gramatica} presents the grammar of our DSL. From this grammar,the Xtext tool suite generates a lexer, a parser, a set of classes representing the AST (Abstract Syntax Tree), and an editor with several features typically available in IDEs.
+% Although Xtext provides an interesting implementation for all these concerns, a language designer is also able to customize several of the Xtext outcomes~\cite{bettini2016}.
+
+
+% Todas as preocupações do próprio Xtext e do código gerado pelo Xtext podem ser customizadas via injeção de dependência \cite{prasanna2009}. Para as mais preocupantes, o comportamento padrão do Xtext geralmente é bom. Para as preocupações que precisam de customização (validação, vinculação/escopo, formatação, entre outros), o Xtext fornece uma API fácil de usar. Although Xtext provides an interesting implementation for all these concerns, a language designer is also able to customize several of the Xtext outcomes~\cite{bettini2016}.
+
+All the concerns of Xtext itself and the code generated by Xtext can be customized via dependency injection \cite{prasanna2009}. For the most worrying, the standard behavior of Xtext is generally good. For concerns that need customization (validation, linking/scope, formatting, among others), Xtext provides an easy-to-use API. Although Xtext provides an interesting implementation for all these concerns, a language designer is also able to customize several of the Xtext outcomes~\cite{bettini2016}.
+
+% O Xtext utiliza intensamente o EMF \cite{blewitt2013}. A AST criada pelo parser do Xtext é um modelo EMF. O modelo Ecore correspondente pode ser derivado automaticamente da gramática ou ser especificado explicitamente. Assim, o Xtext permite fácil integração com ferramentas do ecossistema Eclipse Modeling, como as linguagens de transformação Model-to-Model ou Model-to-Text. Outro exemplo é integrar o Xtext com ferramentas gráficas como o GMF \cite{eysholdt2010}.
+
+Xtext strongly uses EMF \cite{blewitt2013}. The AST created by the Xtext parser is an EMF model. The corresponding Ecore template can be automatically derived from grammar or explicitly specified. Thereby, Xtext allows easy integration with Eclipse Modeling ecosystem tools, such as Model-to-Model or Model-to-Text transformation languages. Another example is to integrate Xtext with graphical tools like GMF \cite{eysholdt2010}.
+
+% O componente responsável pela geração de QDM trabalha apenas com objetos Java. Então foi desenvolvido um gerador de código no projeto de desenvolvimento da DSL. Esse gerador, que é uma generalização da classe AbstractGenerator do Xtext, foi escrito na liguagem Xtend e é responsável pela conversão do modelo EMF contendo os high-level rules declarados na DSL em uma classe Java que contém a representação Java desses high-level rules. Este gerador é automaticamente executado quando o usuário edita a DSL no Eclipse ou quando da execução do plugin maven do Xtext. Como esse gerador está contido na biblioteca (JAR) da DSL, é possível sua invocação de outras formas também, conforme implementação desejada pelo desenvolvedor.
+
+%The component responsible for generating QDM works only with Java objects. Then a code generator was developed in the DSL development project. This generator, which is a generalization of the Xtext AbstractGenerator class, was written in the Xtend language and is responsible for converting the EMF model containing the high-level rules declared in the DSL into a Java class containing the Java representation of these high-level rules. This generator is automatically executed when the user edits the DSL in Eclipse or when executing the Xtext maven plugin. Because this generator is contained in the DSL library (JAR), it can invoke it in other ways as well, as desired by the developer.
+The component responsible for generating QDM works only with Java objects. Then a code generator was developed in the DSL development project. This generator, partially presented in Listing \ref{code:xtend_generator}, was written in the Xtend language and is responsible for converting the EMF model containing the high-level rules declared in the DSL into a Java class containing the Java representation of these high-level rules. This generator is automatically executed when the user edits the DSL in Eclipse or when executing the Xtext maven plugin. Because this generator is contained in the DSL library (JAR), it can invoke it in other ways as well, as desired by the developer.
+
+%ORIGINAL DO LIVRO:::Xtend is a fully featured general purpose Java-like programming language that is completely interoperable with Java. Xtend has a more concise syntax than Java and provides powerful features such as type inference, extension methods, dispatch methods, and lambda expressions, not to mention multiline template expressions, which are useful when writing code generators and other customizations \cite{bettini2016}.
+
+%O Xtend é uma linguagem de programação baseada em Java, de uso geral, com todos os recursos e totalmente interoperável com o Java. Xtend tem uma sintaxe mais concisa do que Java e fornece recursos poderosos como type inference, extension methods, dispatch methods e expressões lambda, besides multiline template expressions, que são úteis ao escrever geradores de código e outras customizações \cite{bettini2016}, sendo esta uma das razões pelas quais optamos pelo seu uso em nossa solução.
+
+Xtend is a Java-based, all-purpose, fully-featured, fully interoperable Java programming language. Xtend has a more concise syntax than Java and provides powerful features like type inference, extension methods, dispatch methods and lambda expressions, besides multiline template expressions, which are useful when writing code generators and other customizations \cite{bettini2016}, this being one of the reasons why we chose to use it in our solution.
+
+\begin{small}
+\begin{lstlisting}[frame=single, language=Xtend, caption={\it Code Generation}, label={code:xtend_generator}]
+class HLRDslGenerator extends AbstractGenerator {
+	static final String BASE_PACKAGE = "br/mil/eb/cds/sisdot/qdm/test/"
+	static final String HELPER = "CallerHelper"
+
+	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {		
+		fsa.generateFile(BASE_PACKAGE+HELPER+".java", resource.allContents.toIterable.filter(Model).get(0).generate)
+	}
+
+	def generate(Model model) '''
+package br.mil.eb.cds.sisdot.qdm.test;
+		
+<<declareImports>>
+
+public class <<HELPER>> implements ICallerHelper {
+	private static final <<HELPER>> instance = new <<HELPER>>();
+	
+	private Map<Long, Caller> callerMap;
+	private List<Caller> callerList;
+	
+	private <<HELPER>>(){ }
+	
+	public static <<HELPER>> instance() {
+		return instance;
+	}
+	
+	public Caller getCaller(Long code) {
+		return callerMap.get(code);
+	}
+	
+	public List<Caller> getCalleres() {
+		return callerList;
+	}
+	
+	<<model.loadCallerMap>>
+	
+	<<FOR caller : model.rules>>
+		<<caller.generateCaller>>
+	<<ENDFOR>>
+			
+	<<declareAuxMethods>>
+}
+	'''
+}
+\end{lstlisting}
+\end{small}
+
+
+
+
+% Foram implementadas também customizações para a validação, formatação e quick-fix. Quando o usuário está utilizando o editor gerado pelo Xtext é possível formatar o código de acordo com a customizações implementadas. Várias validações adicionais, além das incluídas por padrão, são realizadas quando o usuário salva o arquivo da DSL, como: checagem de duplicidade de código da high-level rule, validação do código do high-level rule (maior que zero), tamanho inválido de determinadas strings (como o codot), codot duplicado no mesmo high-level rule, entre outras. Quando é encontrada duplicação de códigos de high-level rule, é habilitada a opção de quick-fix, onde o código é alterado automaticamente para o próximo número após o maior código existente na DSL.
+
+Also implemented were customizations for validation, formatting and quick-fix. When the user is using the editor generated by Xtext it is possible to format the code according to the implemented customizations. Several additional validations, in addition to those included by default, are performed when the user saves the DSL file, such as: high-level rule duplication checking, high-level rule validation (greater than zero), invalid size of certain strings (like the codot), duplicate codot at the same high-level rule, among others. When duplication of high-level rule codes is found, the quick-fix options is enabled, where the code is automatically changed to the next number after the largest DSL code.
+
+
+%Na Listing \ref{code:xtend_validation} é apresentada uma versão simplificada das customizações implementadas, em Xtend, para a validação de high-level rules. %, omitindo as outras cutomizações, assim como imports, métodos auxiliares, entre outros Conforme apresentado, são validados códigos de high-level rules duplicados, já que estes devem ser únicos pois servem para identificar o high-level rule, e códigos inválidos, que devem ser maior que zero.
+
+In Listing \ref{code:xtend_validation} a simplified version of the implemented customizations, in Xtend, is presented for the validation of high-level rules. %, omitting the other cutomizations, as well as imports, auxiliary methods, among others
+As shown, duplicate high-level rules are validated, as they must be unique because they serve to identify the high-level rule, and invalid codes, which must be greater than zero.
+
+\begin{small}
+\begin{lstlisting}[frame=single, language=Xtend, caption={\it Validation Customization}, label={code:xtend_validation}]
+class HLRDslValidator extends AbstractHLRDslValidator {
+
+	static val DUPE_CODE = 'duplicatedCode'
+	static val DUPE_CODE_MSG = "Duplicated code: "
+	static val INVALID_CODE = 'invalidCode'
+	static val INVALID_CODE_MSG = "The code must be greater than zero: "
+	
+	static var Map<Integer, Rule> callerMap = new HashMap;
+
+	@Check
+	def checkDuplicatedCode(Rule caller) {
+		if (callerMap.containsKey(caller.code)) {
+			error(DUPE_CODE_MSG + caller.code, 
+        HLRDslPackage.Literals.RULE__CODE, 
+				DUPE_CODE)
+		} else {
+			callerMap.put(caller.code, caller);
+		}
+	}
+
+	@Check
+	def checkInvalidCode(Rule caller) {
+		if (caller.code <= 0) {
+			error(INVALID_CODE_MSG + caller.code, 
+        HLRDslPackage.Literals.RULE__CODE,
+				INVALID_CODE)
+		}
+	}
+}	
+\end{lstlisting}
+\end{small}
+
+%Na Listing \ref{code:xtend_quickfix} é apresentada uma versão simplificada das customizações implementadas, em Xtend, para o quickfix da validação de código duplicado dos high-level rules.
+
+In the Listing \ref{code:xtend_quickfix} a simplified version of the customizations implemented, in Xtend, is presented for the quickfix of high-level rules duplication validation.
+
+\begin{small}
+\begin{lstlisting}[frame=single, language=Xtend, caption={\it Quickfix Customization}, label={code:xtend_quickfix}]
+class HLRDslQuickfixProvider extends DefaultQuickfixProvider {
+
+	@Fix(HLRDslValidator.DUPE_CODE)
+	def capitalizeName(Issue issue, IssueResolutionAcceptor acceptor) {
+		acceptor.accept(issue, 'Duplicated code', HLRDslValidator.DUPE_CODE_MSG+issue.data, 'Entity.gif') [
+			element, context |
+			val model = element.eContainer as Model
+			val max = model.rules.map[code].max
+			val newMax = max + 1			
+			(element as Rule).code = newMax
+		]
+	}
+}
+\end{lstlisting}
+\end{small}
+
+
+% Durante o desenvolvimento da DSL foram gerados testes que são executados durante o processo de build da DSL. Foram criados testes, não exaustivos, para verificar o funcionamento do parser, das validações customizadas, e o comportamento básico das entidades modeladas. É possível desenvolver testes que validam o editor gerado na própria interface de usuário, executada em uma instância do eclipse. Os testes de User Interface (UI) não foram desenvolvidos neste projeto.
+
+During the development of DSL, tests were generated which are executed during the DSL build process. Non-exhaustive testes were performed to verify the parser operation, the custom validations, and the basic behavior of the modeled entities. It is possible to develop tests that validate the editor generated in the user interface itself, executed in an instance of eclipse. User interface (UI) tests have not been developed in this project.
+
+Listing \ref{code:dslExample} presents a simple example of a \shc declaration using our DSL. The goal of this rule is to distribute the materials (defined in the list of materials construct) for \emph{operational} OMs (see the type construct) and militaries \emph{not working in the specified list of departments} with a set of qualifications and roles. While the definition of this rule using our DSL requires 12 lines of code, the corresponding definition of the same rule using a Java test case requires around 30 lines of imperative code.
+
+\begin{small}
+	\begin{lstlisting}[frame=single, language=DSL, caption={\it Example of a \shc declaration using our DSL}, label={code:dslExample}]
+rule 1 { 
+  type = OPERATIONAL, 
+  materials = [ 
+    ("1051000007" : "Rifle" : 1), 
+    ("1020100011" : "Rifle Carrying Case" : 2)
+  ], cnds = [ 
+    (cond=NEG, type=DEPARTMENT, values=[14086, 14085, 1130, 995, 994, 993, 501]),
+    (type=QUALIFICATION, values=[782, 756, 97]), 
+    (type=ROLE, values=[2, 12, 13, 15, 21, 46])
+  ]
+}
+	\end{lstlisting}
+\end{small}
+
+Our first testing approach consists on the specification of the \callers using \hlrdsl and the specification of the
+\emph{behavior under test} using the Cucumber framework~\cite{wynne2017cucumber} (we present an example in Listing \ref{code:cucumber}).
+After that, the developer details the implementation steps of the features by (a) specifying which
+\callers (previously declared using our DSL) should be considered in the test execution, (b) specifying
+which QC the QDM should be generated, and (c) specifying the expected results in terms of the properties
+of the expected QDM. To increase productivity, we also implemented a testing  infrastructure that supports several facilities,
+including: database connectivity, auxiliary methods for executing queries in the database, and predefined
+rules in the rule engine.
+
+
+
+\begin{lstlisting}[frame=single, language=Cucumber, caption={\it Cucumber feature}, label={code:cucumber}]
+Feature: QDM 757311
+  As a user
+  I want to generate a QDM from HLRs
+
+  Scenario: Test 1
+    Given QC with code 757311
+    And HRL: 1, 2
+    When I generate a QDM
+    And the results are consistent
+    Then positions must be populated
+    | idDep    | idPos   | codot      | amount |
+    | 6765748  | 10403   | 1051000025 | 1      |
+    | 6765748  | 10403   | 1020100017 | 1      |
+    | 6765748  | 10403   | 1020100013 | 1      |
+    | 6765748  | 10403   | 1051000006 | 1      |
+    | 6765748  | 21328   | 1051000025 | 1      |
+    | 6765750  | 10122   | 1051000025 | 1      |    
+    | 6765793  | 13276   | 1051000025 | 6      |
+    | 6765796  | 24655   | 1051000025 | 1      |
+    | 6765796  | 24429   | 1051000025 | 2      |
+    | 6765798  | 24429   | 1051000025 | 3      |
+    | 6765798  | 11433   | 1051000025 | 9      |   
+    And the result must be:
+    | codot      | amount |
+    | 1020100013 | 74     |
+    | 1020100017 | 74     |
+    | 1051000006 | 74     |
+    | 1051000025 | 74     |
+\end{lstlisting}
+
+
+
+That is, \hlrdsl simplifies the process of specifying \callers and its primary goal was to assist in
+test activities. However, after presenting to domain experts some examples of \callers specified using our DSL,
+we realized that \hlrdsl might also be useful to simulate the specification of rules,
+allowing a better understanding of the effect of each \shc for building QDMs.
+
+Our second testing approach automatically generates test cases from our DSL and from a random sample of simple combinations that simulate organizational unities. This \emph{property based approach} involves a custom Maven plugin that currently generates random scenarios, freeing the tester to only implement more complex tests related to the QDM generation. 
+
+%\textcolor{red}{These test cases are generated from a combination of conditions, for example: one test case only for operational OMs and another for non-operational OMs; a test case for the different kinds of OMs (artillery, infantry, cavalry, aviation and helicopters, general services, and so on), combining with the operational type, such as: operational infantry OMs and non-operational infantry OMs. These combinations are generated for simple cases so that they are easy to verify without the need to manually implement Java test scripts for generating QDMs.}
+
+% O Maven plugin desenvolvido define diversos cenários que serão gerados para cada QC declarado. Cada cenário é responsável pela geração de uma high-level rules no formato DSL e um arquivo de definição do cenário no formato do cucumber. Para cada cenário é gerado um QDM para o QC, usando a high-level rule gerado e o resultado deste QDM é conferido de acordo com os dados previstos na definição do cenário do cucumber. Foram criadas diversas combinações de cenários e para cada uma delas alguns dos valores das propriedades são gerados randomicamente, seguindo a técnica PBT. 
+
+The Maven plugin developed defines several scenarios that will be generated for each declared QC. Each scenario is responsible for generating high-level rules using \hlrdsl and a scenario definition file using Cucumber features. For each scenario, we generate a QDM for a specific QC, using the generated high-level rule.
+We check the resulting QDM according to the expected data we specify in the Cucumber scenario definition. Several combinations of scenarios have been created and, for each of those combinations, we randomly generate values for the properties using PBT technique.
+
+% Os cenários de teste foram divididos em três grupos, de acordo com as seções da DRL (QC, fração e cargo). Isso foi feito pois cada região é testada de forma quase que independente, possuindo dependência apenas da validade da região anterior. Por exemplo: a região de fração só é avaliada se a região de QC tiver sido avaliada como verdadeira, então essas regiões podem ser testadas de forma independente ao assumir que a região anterior é verdadeira e que foram gerados casos de testes que ajudaram a validar o funcionamento das condições da região anterior. Ao assumir a independência dos grupos, para fins de teste, é possível focar nas combinações das propriedades de cada grupo, facilitando a geração de cenários de teste. 
+
+The test scenarios were divided into three groups, according to the sections of the DRL (QC, fraction and charge). This was done because each region is tested almost independently, having dependence only on the validity of the anterior region. For example: the fraction region is evaluated only if the QC region has been evaluated as true, then these regions can be tested independently by assuming that the previous region is true and that test cases have been generated which have helped to validate the conditions of the previous region. By assuming the independence of the groups, for testing purposes, it is possible to focus on the combinations of the properties of each group, facilitating the generation of test scenarios.
+
+% Cada grupo de cenários é responsável por testar várias das combinações das propriedades da entidade relativa ao grupo (QC, fração ou cargo). Em cada cenário é definido uma high-level rule e uma lista com os resultados esperados, que são gerados de acordo com a combinação específica de propriedades deste cenário. Como o MEM definido na high-level rule não interfere na execução das regras, foi definido um MEM padrão para todas as high-level rules geradas, assim como a quantidade igual a um (unitário). Isso foi feito para diminuir a complexidade do algoritmo de geração ao não precisar acessar o banco de dados várias vezes para recuperar MEMs de forma randômica, tendo em vista que não interferem na avaliação das regras envolvidas na geração do QDM.
+
+Each scenario group is responsible for testing different combinations of entity properties relative to the group (QC, fraction or role). In each scenario a high-level rule and a list with the expected results are defined, which are generated according to the specific combination of properties in this scenario. Since the MEM defined in the high-level rule does not interfere in the execution of the rules, a standard MEM has been defined for all high-level rules generated, as well as a quantity equal to one (unitary). This was done to reduce the complexity of the generation algorithm by not having to access the database several times to retrieve MEMs in a random way, since they do not interfere in the evaluation of the rules involved in the generation of QDM.
+
+% No grupo de QC existem as seguintes propriedades: operacionalidade, natureza, subnatureza e valor. Foram criados cenários específicos para cada propriedade e para combinações entre elas. Para a propriedade natureza do QC, por exemplo, foram definidos os seguintes cenários:
+
+There are four domain properties related to QCs:
+\emph{kind} (either operational, non-operational or both),
+\emph{nature}, \emph{sub-nature}, and \emph{value}. Specific scenarios have been created not only for each property, but also considering different
+combinations of properties. For instance, considering the \emph{nature} property of the QC, the following scenarios have been defined: valid nature and valid OM type; valid type and valid typeOM (both); valid nature and invalid typeOM; invalid nature and invalid typeOM; deny nature, invalid; deny nature, valid.    
+
+%\begin{itemize}
+
+% \item natureza válida e tipoOM válido: este cenário gera um QDM válido, com resultados válidos, pois neste cenário é criado um high-level rule com os mesmos valores de natureza e operacionalidade (tipoOM) do QC para o qual será gerado o QDM, ou seja, natureza e tipoOM válidos;
+
+%\item valid nature and valid OM type: this scenario generates a valid QDM, with valid results, because in this scenario a high-level rule with the same values of nature and type of the QC for which the QDM is generated is created , valid nature and typeOM;
+
+% \item natureza válida e tipoOM válido (AMBOS): este cenário funciona de forma parecida com o anterior, mas o tipoOM é definido como "AMBOS" no high-level rule. Este tipoOM indica que o QC pode ser operacional ou não-operacional;
+
+%\item valid type and valid typeOM (BOTH): this scenario works similarly to the previous one, but the typeOM is set to "BOTH" in the high-level rule. This type indicates that QC can be operational or non-operational;
+
+% \item natureza válida e tipoOM inválido: o valor da natureza é o mesmo do QC, pois é válido, e o valor do tipoOM é alterado. Por exemplo: se o QC for operacional o valor é alterado para não-operacional e vice-versa;
+
+%\item valid nature and invalid typeOM: the value of nature is the same as the QC, since it is valid, and the value of typeOM is changed. For example: if the QC is operational the value is changed to non-operational and vice versa;
+
+% \item natureza inválida e tipoOM válido: o valor da natureza deve ser inválido no high-level rule, ou seja, um valor diferente da natureza do QC. A geração deste valor inválido de natureza é realizado de forma randômica, usando a seed configurada no plugin maven, em uma lista de códigos de naturezas reais previamente definida;
+
+% \item invalid nature and valid typeOM: Nature value must be invalid at high-level rule, i.e., a value different from the nature of QC. The generation of this invalid value of nature is performed in a random fashion, using the seed configured in the maven plugin, in a previously defined real-life code list;
+
+% \item natureza inválida e tipoOM inválido: os valores de natureza e tipoOM são inválidos, e são gerados conforme citado anteriormente: invertendo o valor de operacionalidade e recuperando randomicamente um código de natureza da lista declarada previamente;
+
+%\item invalid nature and invalid typeOM: the values of nature and typeOM are invalid, and are generated as previously mentioned: reversing the value of operability and randomly retrieving a code of nature from the list previously declared;
+
+% \item negar natureza, inválido: as combinações citadas anteriormente nesta lista possuem high-level rules com regras do tipo "AFIRMACAO", o tipo padrão de uma regra. Mas existe o tipo "NEGACAO", onde a regra é negada, ou seja, a condição (na DRL) é válida quando o valor testado não pertence à lista de valores especificados na regra. Neste cenário, por exemplo, há uma regra de negação da natureza de forma que o QDM seja inválido. Então foi criada uma regra para "NATUREZA" do tipo "NEGACAO" definindo como valor o código da natureza do QC. Com isso, esta regra não é válida para este QC, sendo válida para todas as outras naturezas exceto a deste QC;
+
+%\item deny nature, invalid: the combinations previously mentioned in this list have high-level rules with rules of type "AFFIRMATION", the standard type of a rule. But there is the type "DENIAL", where the rule is denied, that is, the condition (in the DRL) is valid when the value tested does not belong to the list of values specified in the rule. In this scenario, for example, there is a nature negation rule so that QDM is invalid. Then a rule for "NATURE" of the type "DENIAL" was created defining the code of the nature of QC. Therefore, this rule is not valid for this QC, being valid for all other natures except that of this QC;
+
+% \item negar natureza, válido: para este cenário é criado uma high-level rule com uma regra para "NATUREZA" do tipo "NEGACAO", mas gerando um código de natureza diferente da natureza do QC. Com isso, esta regra é válida para este QC.
+
+%\item deny nature, valid: for this scenario a high-level rule with a rule for "NATURE" of type "DENIAL" is created, but generating a code of a nature different from the nature of QC. Therefore, this rule is valid for this QC.
+
+%\end{itemize}
+
+% Seguindo a mesma linha de combinações utilizadas paras cenários envolvendo natureza do QC, foram criados cenários para subnatureza e valor. Não foram criados cenários para tipoOM pois esta é uma propriedade de preenchimento obrigatório no high-level rule e a checagem de sua validade já é exercitada em todos os cenários do grupo. Na Table \ref{table:valor} são apresentados os cenários definidos para o Valor do QC e suas combinações. Na primeira coluna é apresentado o número do cenário, criado apenas para facilitar uma possível referência a uma linha específica da tabela. As outras colunas contém os valores das propriedades do QC sendo combinadas. A células com valor 0 indicam que o valor desta propriedade, indicada pela coluna, é inválido, ou seja, deverá ser selecionado um valor randomicamente de uma lista previamente definida e este valor deve ser diferente do valor que essa propriedade apresenta no QC. As células com o valor 1 indicam que o valor desta propriedade é válido, ou seja, é o mesmo valor definido no QC para esta propriedade. As células sem valor indicam que essa propriedade não faz parte da combinação. 
+
+Following the same line of combinations used for scenarios involving the nature of QC, scenarios were created for sub-nature and value. No scenarios have been created for typeOM because this is a mandatory property in the high-level rule and checking its validity is already exercised in all scenarios of the group. In Table \ref{table:valor} the scenarios defined for the Value of QC and its combinations are presented. In the first column the scenario number is displayed, created only to facilitate a possible reference to a specific row in the table. The other columns contain the QC property values being combined. Cells with a value of 0 indicate that the value of this property, indicated by the column, is invalid, that is, a random value must be selected from a previously defined list and this value must be different from the value that this property has in QC. Cells with a value of 1 indicate that the value of this property is valid, that is, it is the same value defined in the QC for this property. Cells with no value indicate that this property is not part of the combination.
+
+\begin{table}[htb!]
+	\centering
+	\caption{Defined Scenarios for QC Value}
+	\label{table:valor}
+	\begin{center}
+		\begin{tabular}{ccccc}
+			\toprule
+\textbf{Scenarios} & \textbf{Value} & \textbf{Subnature} & \textbf{Nature} & \textbf{TypeOM} \\ \hline
+1                & 0              &                      &                   & 0               \\ \hline
+2                & 0              &                      &                   & 1               \\ \hline
+3                & 1              &                      &                   & 0               \\ \hline
+4                & 1              &                      &                   & 1               \\ \hline
+5                & 0              &                      & 0                 & 0               \\ \hline
+6                & 0              &                      & 0                 & 1               \\ \hline
+7                & 0              &                      & 1                 & 0               \\ \hline
+8                & 0              &                      & 1                 & 1               \\ \hline
+9                & 1              &                      & 0                 & 0               \\ \hline
+10               & 1              &                      & 0                 & 1               \\ \hline
+11               & 1              &                      & 1                 & 0               \\ \hline
+12               & 1              &                      & 1                 & 1               \\ \hline
+13               & 0              & 0                    & 0                 & 0               \\ \hline
+14               & 0              & 0                    & 0                 & 1               \\ \hline
+15               & 0              & 0                    & 1                 & 0               \\ \hline
+16               & 0              & 0                    & 1                 & 1               \\ \hline
+17               & 0              & 1                    & 0                 & 0               \\ \hline
+18               & 0              & 1                    & 0                 & 1               \\ \hline
+19               & 0              & 1                    & 1                 & 0               \\ \hline
+20               & 0              & 1                    & 1                 & 1               \\ \hline
+21               & 1              & 0                    & 0                 & 0               \\ \hline
+22               & 1              & 0                    & 0                 & 1               \\ \hline
+23               & 1              & 0                    & 1                 & 0               \\ \hline
+24               & 1              & 0                    & 1                 & 1               \\ \hline
+25               & 1              & 1                    & 0                 & 0               \\ \hline
+26               & 1              & 1                    & 0                 & 1               \\ \hline
+27               & 1              & 1                    & 1                 & 0               \\ \hline
+28               & 1              & 1                    & 1                 & 1               \\ \hline
+		\end{tabular}
+	\end{center}
+\end{table}
+
+% No grupo Cargo existem as seguintes propriedades: código do cargo, subcírculo ao qual o cargo pertence, o posto (patente) necessário para ocupar o cargo, e a arma (Arma, Quadro ou Serviço) necessária para ocupar o cargo. O subcírculo está relacionado às graduações (posto/patente) existentes, servindo como uma forma de agrupamento. Por exemplo: o subcírculo superior agrupa as patentes de coronel, tenente-coronel e major; o subcírculo subalterno agrupa os tenentes. 
+
+In the Role group there are the following properties: position code, sub-circle to which the position belongs, position (patent) needed to fill the position, and the weapon (Weapon, Frame or Service) required to fill the position. The sub-circle is related to existing (rank/patent) grades, serving as a form of grouping. For example: the upper sub-circle groups the patents of colonel, lieutenant-colonel and major; the subordinate sub-circle groups the lieutenants.
+
+% Para cada cenário do grupo de cargos foi selecionado um cargo aleatoriamente da lista de cargos do QC, utilizando a seed configurada no plugin maven. De acordo com o cargo selecionado são geradas as regras conforme a combinação de propriedades especificada para o cenário. Para cada cenário, além das regras, é gerada também uma lista contendo os resultados esperados, ou seja, os dados que se espera encontrar no QDM gerado para o QC. 
+
+For each scenario in the role group, a role was randomly selected from the QC role list, using the seed configured in the maven plugin. According to the selected position, the rules are generated according to the combination of properties specified for the scenario. For each scenario, in addition to the rules, a list containing the expected results is generated, that is, the data expected to be found in the QDM generated for the QC.
+
+% Para este trabalho foram especificados 100 cenários. Todos os cenários gerados, independente do grupo, contém um high-level rule, com as regras referentes à combinação de propriedades definida para o cenário, e uma lista de resultados esperados, que serão comparados com os dados do QDM gerado. Para cada QC declarado no plugin é gerada uma lista de cenários. Para cada QC é gerado um arquivo cucumber contendo os cenários definido para este QC. A geração do arquivo é realizada com o uso do Freemarker, usando um template previamente definido.
+
+For this work 100 scenarios were specified. All generated scenarios, independent of the group, contain a high-level rule, with rules relating to the combination of properties defined for the scenario, and a list of expected results that will be compared with the generated QDM data. For each QC declared in the plugin a list of scenarios is generated. For each QC is generated a cucumber file containing the scenarios defined for this QC. File generation is done using Freemarker, using a predefined template.
+
+% O processo de geração automática de testes pode ser resumido da seguinte maneira: o plugin maven deve ser declarado e configurado, indicando a lista com os códigos dos QCs para os quais devem ser gerados testes. Então, para cada QC da lista são gerados cenários, com variações em suas propriedades de acordo com o QC sendo testado. Os cenários gerados são transformados em arquivos do cucumber e de DSL, que representam os cenários gerados. Houve então uma conversão dos cenários gerados com base na técnica Property-based Testing (PBT) em casos de teste, por exemplo, que serão executados automaticamente durante a fase adequada do ciclo de vida de \textit{build} do maven. Existe a possibilidade de geração de relatório da execução dos testes em alguns formatos, como: html e json.
+
+%The automatic test generation process can be summarized as follows: the maven plugin must be declared and configured, indicating the list with the QC codes for which tests must be generated. Then, for each QC of the list scenarios are generated, with variations in their properties according to the QC being tested. The generated scenarios are modified into cucumber and DSL files, which represent the generated scenarios. There was then a conversion of the generated scenarios based on the Property-based Testing (PBT) technique into test cases, i.e., which will run automatically during the appropriate phase of the maven build life cycle. There is the possibility of reporting the execution of tests in some formats, such as: html and json.
+
+\begin{figure}[!ht] %\centering
+	\includegraphics[scale=0.4]{img/processo.png}
+	\caption{Tests Generation Process} 
+	\label{fig:process}
+\end{figure}
+
+% Conforme apresentado na Figure \ref{fig:process}, o processo de geração automática de testes foi realizado de acordo com o seguinte fluxo : o usuário define em um arquivo denominado POM o plugin Maven do SISDOT, que deve ser declarado e configurado, indicando a lista com os códigos dos QCs para os quais devem ser gerados testes, dados de conexão com o banco de dados, entre outros parâmetros configuráveis. A partir da lista de códigos de QCs definida, cada QC é recuperado do banco de dados e para cada um são gerados cenários de teste, com variações em suas propriedades de acordo com o QC que está sendo testado. Os cenários gerados são transformados em arquivos do cucumber e da DSL, que representam os cenários que foram gerados. Houve então uma conversão dos cenários gerados com base na técnica Property-based Testing (PBT) em casos de teste, que serão executados automaticamente durante a fase adequada do ciclo de vida da \textit{build} do Maven. 
+
+As shown in Figure \ref{fig:process}, the automatic test generation process was performed according to the following flow: the user defines in a file called POM the SISDOT Maven plugin, which must be declared and configured, indicating the list with the codes of the QCs for which tests must be generated, database connection data, and other configurable parameters. From the list of QC codes defined, each QC is retrieved from the database and for each one, test scenarios are generated, with variations in their properties according to the QC being tested. The generated scenarios are transformed into cucumber and DSL files, which represent the scenarios that were generated. There was then a conversion of the generated scenarios based on the Property-based Testing (PBT) technique in test cases, which will be executed automatically during the appropriate phase of the Maven's build lifecycle.
+
+% Como o componente responsável pela geração de QDM trabalha apenas com objetos Java, é utilizado o plugin do Xtext para gerar o código Java a partir da DSL gerada. O plugin responsável por executar os testes unitários, neste caso o surefire, configurado juntamente com o cucumber executa os cenários de teste gerados. Para cada cenário é gerado o QDM e seus dados são checados com os resultados esperados declarados no respectivo cenário. A geração do QDM é uma versão simplificada da utilizada no SISDOT, onde os high-level rules não precisam ser recuperados do banco de dados, pois já foram gerados, e o QC é recuperado de um cache, após a primeira consulta ao banco de dados. Os outros passos para a geração do QDM são idênticos, com a transformação dos high-level rules em DRL através do freemarker, e a geração do QDM pelo Drools. Os dados do QDM são então conferidos com os resultados esperados, gerados para o cenário. Ao final da fase de testes é gerado um relatório da execução dos testes, que pode ser disponibilizado em alguns formatos, tais como: html e json.
+
+Because the component responsible for generating QDM works only with Java objects, the Xtext plugin is used to generate the Java code from the generated DSL. The plugin responsible for running the unit tests, in this case the surefire, set up together with the cucumber runs the generated test scenarios. For each scenario the QDM is generated and its data is checked with the expected results declared in the respective scenario. The QDM generation is a simplified version of the one used in SISDOT, where high-level rules do not have to be retrieved from the database since they have already been generated, and QC is retrieved from a cache after the first query to the database . The other steps for generating QDM are identical, with the transformation of high-level rules into DRL through freemarker, and the generation of QDM by Drools. The QDM data is then checked against the expected results generated for the scenario. At the end of the test phase, a test execution report is generated, which can be made available in some formats, such as: html and json.
+
+% \begin{lstlisting}[frame=single, language=Plugin, caption={\it Maven plugin for test generation}, label={code:plugin}]
+% <plugin>
+%   <groupId>xxx</groupId>
+%   <artifactId>xxx</artifactId>
+%   <executions>
+%     <execution>
+%       <id>execute</id>			
+%       <configuration>
+%         <seed>10</seed>				
+%         <qcs>702311,762314,575311</qcs>				
+%       </configuration>
+%       <goals>
+%         <goal>generate</goal>
+%       </goals>
+%     </execution>
+%   </executions>
+% </plugin>	
+% \end{lstlisting}
+
+%\textcolor{red}{In this second approach, for each of the possible combinations, we generate a \shc that meets the conditions and a cucumber feature that exercises the \shc and compares the expected results declared in the feature. Each \shc is considered during the generation of the QDM to the QCs specified in the maven plugin.
+%That is, to use this architecture characteristic (here we consider testability as an architecture concern), we ``feed'' the maven plugin with a list of QC codes for which the QDMs should be generated, besides other optional information, which have default values, such as: database connection string, seed to be used in the random selection of values within a combination (e.g., considering 20 different kinds of organizational unities, randomly take 5 for generating the set of combinations), and the output directory where the code should be exported. }
+
+%After running the plugin, with the generated code, the tests are executed in a similar way to the test definitions detailed before. The tests run along with the other unit tests declared, whether DSL-based or not.
+
+
 
 
 
@@ -583,6 +1528,8 @@ Figure \ref{fig:geracao} shows the time necessary to generate QDMs for 5 differe
 	\caption{\it QDM Generation Time (ms)}
 	\label{fig:geracao}
 \end{figure}
+
+
 
 
 
