@@ -7,9 +7,7 @@
 SISDOT is based on the client-server architectural style (according to a typical Java enterprise application), where the components interact to each other by requesting services from other components~\cite{clements2011documenting}. SISDOT is also organized into logical groups of components (known as tiers)---a strategy often used in the client-server architectural style. The multi-tier architectural pattern can be classified as a \emph{component and connector} pattern, depending on the criterion used to define the tiers~\cite{bass2013software}. Indeed, there are several criteria, such as component type, sharing of the execution environment, 
 and so on~\cite{clements2011documenting}.
 
-The multi-tier pattern also induces some topological constraints that govern how the components might interact with other components. 
-Specifically, connectors might only exist between components of the same tier or that reside in an adjacent tier~\cite{clements2011documenting}. In addition, according to Bass et al., the organization of a system using tiers supports software maintenance, facilitates the definition of security policies, and might increase the performance, availability, and modifiability of 
-the systems~\cite{bass2013software}. 
+The multi-tier pattern also induces some topological constraints that govern how the components might interact with other components. Specifically, connectors might only exist between components of the same tier or that reside in an adjacent tier~\cite{clements2011documenting}. In addition, according to Bass et al., the organization of a system using tiers supports software maintenance, facilitates the definition of security policies, and might increase the performance, availability, and modifiability of the systems~\cite{bass2013software}. 
 
 
 
@@ -217,7 +215,7 @@ Also implemented were customizations for validation, formatting and quick-fix. W
 
 %Na Listing \ref{code:xtend_validation} é apresentada uma versão simplificada das customizações implementadas, em Xtend, para a validação de high-level rules. %, omitindo as outras cutomizações, assim como imports, métodos auxiliares, entre outros Conforme apresentado, são validados códigos de high-level rules duplicados, já que estes devem ser únicos pois servem para identificar o high-level rule, e códigos inválidos, que devem ser maior que zero.
 
-In Listing \ref{code:xtend_validation} is a simplified version of the implemented customizations, in Xtend, is presented for the validation of high-level rules. %, omitting the other cutomizations, as well as imports, auxiliary methods, among others
+In Listing \ref{code:xtend_validation} a simplified version of the implemented customizations, in Xtend, is presented for the validation of high-level rules. %, omitting the other cutomizations, as well as imports, auxiliary methods, among others
 As shown, duplicate high-level rules are validated, as they must be unique because they serve to identify the high-level rule, and invalid codes, which must be greater than zero.
 
 \begin{small}
@@ -256,7 +254,7 @@ class HLRDslValidator extends AbstractHLRDslValidator {
 
 %Na Listing \ref{code:xtend_quickfix} é apresentada uma versão simplificada das customizações implementadas, em Xtend, para o quickfix da validação de código duplicado dos high-level rules.
 
-In the Listing \ref{code:xtend_quickfix} is a simplified version of the customizations implemented, in Xtend, is presented for the quickfix of high-level rules duplication validation.
+In the Listing \ref{code:xtend_quickfix} a simplified version of the customizations implemented, in Xtend, is presented for the quickfix of high-level rules duplication validation.
 
 \begin{small}
 \begin{lstlisting}[frame=single, language=Xtend, caption={\it Quickfix Customization}, label={code:xtend_quickfix}]
@@ -363,7 +361,7 @@ The test scenarios were divided into three groups, according to the sections of 
 
 % Cada grupo de cenários é responsável por testar várias das combinações das propriedades da entidade relativa ao grupo (QC, fração ou cargo). Em cada cenário é definido uma high-level rule e uma lista com os resultados esperados, que são gerados de acordo com a combinação específica de propriedades deste cenário. Como o MEM definido na high-level rule não interfere na execução das regras, foi definido um MEM padrão para todas as high-level rules geradas, assim como a quantidade igual a um (unitário). Isso foi feito para diminuir a complexidade do algoritmo de geração ao não precisar acessar o banco de dados várias vezes para recuperar MEMs de forma randômica, tendo em vista que não interferem na avaliação das regras envolvidas na geração do QDM.
 
-Each scenario group is responsible for testing different combinations of entity properties relative to the group (QC, fraction or charge). In each scenario a high-level rule and a list with the expected results are defined, which are generated according to the specific combination of properties in this scenario. Since the MEM defined in the high-level rule does not interfere in the execution of the rules, a standard MEM has been defined for all high-level rules generated, as well as a quantity equal to one (unitary). This was done to reduce the complexity of the generation algorithm by not having to access the database several times to retrieve MEMs in a random way, since they do not interfere in the evaluation of the rules involved in the generation of QDM.
+Each scenario group is responsible for testing different combinations of entity properties relative to the group (QC, fraction or role). In each scenario a high-level rule and a list with the expected results are defined, which are generated according to the specific combination of properties in this scenario. Since the MEM defined in the high-level rule does not interfere in the execution of the rules, a standard MEM has been defined for all high-level rules generated, as well as a quantity equal to one (unitary). This was done to reduce the complexity of the generation algorithm by not having to access the database several times to retrieve MEMs in a random way, since they do not interfere in the evaluation of the rules involved in the generation of QDM.
 
 % No grupo de QC existem as seguintes propriedades: operacionalidade, natureza, subnatureza e valor. Foram criados cenários específicos para cada propriedade e para combinações entre elas. Para a propriedade natureza do QC, por exemplo, foram definidos os seguintes cenários:
 
@@ -450,11 +448,11 @@ Following the same line of combinations used for scenarios involving the nature 
 
 % No grupo Cargo existem as seguintes propriedades: código do cargo, subcírculo ao qual o cargo pertence, o posto (patente) necessário para ocupar o cargo, e a arma (Arma, Quadro ou Serviço) necessária para ocupar o cargo. O subcírculo está relacionado às graduações (posto/patente) existentes, servindo como uma forma de agrupamento. Por exemplo: o subcírculo superior agrupa as patentes de coronel, tenente-coronel e major; o subcírculo subalterno agrupa os tenentes. 
 
-In the Job group there are the following properties: position code, sub-circle to which the position belongs, position (patent) needed to fill the position, and the weapon (Weapon, Frame or Service) required to fill the position. The sub-circle is related to existing (rank/patent) grades, serving as a form of grouping. For example: the upper sub-circle groups the patents of colonel, lieutenant-colonel and major; the subordinate sub-circle groups the lieutenants.
+In the Role group there are the following properties: position code, sub-circle to which the position belongs, position (patent) needed to fill the position, and the weapon (Weapon, Frame or Service) required to fill the position. The sub-circle is related to existing (rank/patent) grades, serving as a form of grouping. For example: the upper sub-circle groups the patents of colonel, lieutenant-colonel and major; the subordinate sub-circle groups the lieutenants.
 
 % Para cada cenário do grupo de cargos foi selecionado um cargo aleatoriamente da lista de cargos do QC, utilizando a seed configurada no plugin maven. De acordo com o cargo selecionado são geradas as regras conforme a combinação de propriedades especificada para o cenário. Para cada cenário, além das regras, é gerada também uma lista contendo os resultados esperados, ou seja, os dados que se espera encontrar no QDM gerado para o QC. 
 
-For each scenario in the job group, a job was randomly selected from the QC job list, using the seed configured in the maven plugin. According to the selected position, the rules are generated according to the combination of properties specified for the scenario. For each scenario, in addition to the rules, a list containing the expected results is generated, that is, the data expected to be found in the QDM generated for the QC.
+For each scenario in the role group, a role was randomly selected from the QC role list, using the seed configured in the maven plugin. According to the selected position, the rules are generated according to the combination of properties specified for the scenario. For each scenario, in addition to the rules, a list containing the expected results is generated, that is, the data expected to be found in the QDM generated for the QC.
 
 % Para este trabalho foram especificados 100 cenários. Todos os cenários gerados, independente do grupo, contém um high-level rule, com as regras referentes à combinação de propriedades definida para o cenário, e uma lista de resultados esperados, que serão comparados com os dados do QDM gerado. Para cada QC declarado no plugin é gerada uma lista de cenários. Para cada QC é gerado um arquivo cucumber contendo os cenários definido para este QC. A geração do arquivo é realizada com o uso do Freemarker, usando um template previamente definido.
 
