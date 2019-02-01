@@ -241,7 +241,7 @@
 
 \author[
    addressref={aff1},                   % id's of addresses, e.g. {aff1,aff2}
-   corref={aff1},                       % id of corresponding address, if any
+   corref=%{aff1},                       % id of corresponding address, if any
    %noteref={n1},                        % id's of article notes, if any
    email={phtcosta@gmail.com}   % email address
 ]{\inits{PHT}\fnm{Pedro Henrique Teixeira} \snm{Costa}}
@@ -409,8 +409,6 @@ In this paper we extend our previous work with a more detailed description of ou
 
 Although we discuss the distribution of materials and equipment for the military domain (which is far from trivial), we believe that the architectural decisions discussed here can be exploited to other logistics and endorsements scenarios in which it is also desirable to transparently introduce the support for rule based engines in enterprise systems.
 
-%\textcolor{red}{This paper is organized as follows. The Section \ref{sec:logistics} presents the concepts related to the domain of military logistics. Section \ref{sigelog} presents the concepts related to business rules and rule based engines and Section \ref{back} presents some background information related to generative programming—techniques that we use to support the design and implementation of our approach. Section \ref{sec:Methodology} explains the research methodology used. Section \ref{sec:architecture} presents the main design and architectural decisions we take to develop the mechanism responsible for the distribution of materials. In Section \ref{sec:case_study} we present the results of an empirical study that validate our approach. Section \ref{threats} presents the discussion and threats to validity this work. Finally, Section \ref{sec:related} and Section \ref{sec:conclusao} relate our work with the existing literature and present some final remarks.}
-
 This paper is organized as follows. The Section \ref{sec:logistics} presents the concepts related to the domain of military logistics. Section \ref{sigelog} presents some architectural constraints and Section \ref{back} presents some background information related to business rules, rule based engines and generative programming techniques that we use to support the design and implementation of our approach. Section \ref{sec:Methodology} explains the research methodology used. Section \ref{sec:architecture} presents the main design and architectural decisions we take to develop the mechanism responsible for the distribution of materials. In Section \ref{sec:case_study} we present the results of an empirical study that validate our approach. Section \ref{threats} presents the discussion and threats to validity this work. Finally, Section \ref{sec:related} and Section \ref{sec:conclusao} relate our work with the existing literature and present some final remarks.
 
 
@@ -470,6 +468,7 @@ introduce some technical background related to \emph{Rule Based Systems} and
 \emph{Property Based Testing}. This background might help the reader to
 understand the design and architectural decisions we take
 while implementing SISDOT.  
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Rule Based Systems
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1431,14 +1430,15 @@ Not applicable.
 
 The authors declare that they have no competing interests.
 
+\subsection{Funding}
+
+Funding information is not applicable for this paper.
+
+
 \subsection{Author's contributions}
 
 All authors have contributed to the methodological and experimental aspects
 of the research. The authors have also read and approved the final manuscript. 
-
-\subsection{Funding}
-
-Funding information is not applicable for this paper.
 
 \subsection{Acknowledgements}
 
