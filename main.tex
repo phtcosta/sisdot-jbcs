@@ -434,7 +434,15 @@ In order to facilitate the administration and control of materials and equipment
 
 In this paper we present the main design and architectural decisions related to one of the modules (SISDOT) of the \emph{Integrated Logistics System} (SIGELOG) of the Brazilian Army. SISDOT deals with the identification of the necessary materials and equipment (hereafter MEMs) for the organizational unities of the Brazilian Army. Each organizational unity is a combination of a set of \emph{generic organizations of specific types}, which describe the expected number of military unities of an organization (including armies, divisions, brigades, and so on). The goal of SISDOT is twofold. It first estimates the set of MEMs that should be assigned to the generic organizations, producing one of its main products (named QDM). Based on a set of QDMs, the SISDOT's second goal is to derive another estimate of MEMs that should be assigned to the concrete organizational unities (a QDMP). 
 
-Before generating a QDM, it is necessary to catalog all relevant MEMs to a given class of materials and then specify \callers (HLRs) that relate MEMs to the generic organizational unities, considering different elements of the structure---from the type of the unity and sub-unities to the qualifications of a soldier. That is, it is possible to elaborate a \shc that states that a military ambulance should be assigned to all \emph{drivers within medical unities}. Differently, it is also possible to state that an automatic rifle will be assigned to all \emph{sergeant that has been qualified as a shooter}. There is some degree of flexibility for writing these rules, that might be from two different kinds: rules that consider the entire structure of the Brazilian Army and rules that refer to specific elements of the organizational structure. The former details rules that are more specific for a set of military qualifications. The second allows the generation of rules that might be reused through different unities. 
+{\color{blue}
+Before generating a QDM, it is necessary to catalog all relevant MEMs to a given class of materials and then specify \callers (HLRs) that relate MEMs to the generic organizational unities, considering different elements of the structure---from the type of the unity and sub-unities to the qualifications of a soldier. That is, it is possible to state that:
+
+\begin{itemize}
+ \item a military ambulance should be assigned to all \emph{drivers within medical unities}.
+ \item an automatic rifle should be assigned to all \emph{sergeant that has been qualified as a shooter}.
+\end{itemize}
+
+These are examples of \callers. There is some degree of flexibility for writing these rules, that might be from two different kinds: rules that consider the entire structure of the Brazilian Army and rules that refer to specific elements of the organizational structure. The former details rules that are more specific for a set of military qualifications. The second allows the generation of rules that might be reused through different unities.}
 
 Deriving QDMs and QDMPs is not trivial and its complexity is due to several factors, including the organizational structure of the Brazilian Army, the number of existing functions and qualifications that must be considered, and the reasonable number of MEMs. The process might also vary depending on the class of the materials. Moreover, it is possible to specify the \callers in different ways, which might interact with each other leading to undesired results (e.g., the same material being assigned several times to a given soldier). 
 
@@ -495,7 +503,8 @@ Drools is an example of a business logic integration platform (BLiP) written in 
 
 Generative Programming (GP) is related to the design and implementation of software components that can be combined to generate specialized and highly optimized systems, fulfilling specific requirements~\cite{DBLP:phd/dnb/Czarnecki99}. With this approach, instead of developing solutions from scratch, domain-specific solutions are generated from reusable software components \cite{arora2009}. GP is applied on the manufacturing of software products from components in a system in an automated way (and within economic constraints), i.e., using an approach that is similar to that found in industries that have been producing mechanical, electronic, and other goods for decades \cite{barth2002}. The main idea in GP is similar to the one that led people to switch from Assembly languages to high-level languages. 
 
-In our context, we use GP to deal with two different aspects of SISDOT. First, we raise the level of abstraction by automatically generating low-level Drools rules from an existing set of \callers (previously defined by the domain experts). This is a \emph{meta-programming} approach based on template engines---we use a template to generate a set of facts and rules (which are the fundamental mechanisms of logic programming) from domain objects. We also raise the level of abstraction to assist developers in the specification and execution of test cases, using a domain specific language and a set of custom libraries and tools.  
+In our context, we use GP to deal with two different aspects of SISDOT. First, we raise the level of abstraction by automatically generating low-level Drools rules from an existing set of \callers{\color{blue}---domain experts use a Web based interface with the system to specify these \callers, which are then stored in a database.} We use a \emph{meta-programming} approach based on template engines to convert these \callers into low-level Drools rules. Second, we use a generative programming approach to raise the level of abstraction in the specification and execution of test cases. To this end, we use a domain specific language and a set of
+custom libraries and tools.  
 
 
 \subsubsection{Metaprogramming and Template Engines}
@@ -515,11 +524,14 @@ A language is a set of valid sentences, serving as a mechanism for expressing in
 Domain Specific Languages (DSL) are specification languages or programming languages with high level of abstraction, simple and concise \cite{raja2010}, focused on specific domains, and are designed to facilitate the construction of applications, usually declaratively, with limited expressiveness lines of code, which solve these specific problems \cite{neeraj2017}. A DSL is a computer language of limited expressiveness, through appropriate notations and abstractions, focused and generally restricted to a specific problem domain \cite{fowler2013,vanDeursen2000}. DSLs have the potential to reduce the complexity of software development by increasing the level of abstraction for a domain. According to the application domain, different notations (textual, graphical, tabular) are used \cite{pfeiffer2008}.
 
 
-In this work we used Xtext ~\cite{eysholdt2010} (a language workbench) to implement a DSL that helps developers to specify and execute test cases related to the process of QDM generation. The main rationale to building this DSL was the significant costs related to specifying \callers (particularly during acceptance testing).
-Our DSL integrates with a \emph{property based testing} infrastructure that
-is able to generate different configurations of \emph{military unities}. We use
-this infrastructure to increase our confidence about the generation process of
-QDMs and support regression testing.
+In this work we used Xtext ~\cite{eysholdt2010} (a language workbench) to implement a DSL that helps developers to specify and execute test cases related to the process of QDM generation. The main rationale for this DSL was the significant costs related to specifying \callers during the activities of acceptance testing.
+{\color{blue}That is, instead of using the Web interface, which is suitable for the domain experts, testers should specify the \callers using a textual domain specific language. After specifying the \callers using our DSL, the test team 
+  uses a \emph{property based testing} infrastructure that
+  generates different configurations of \emph{military unities}, boosting the
+  efficiency of the test procedures}. We use
+this infrastructure not only to increase our confidence
+about the generation process of
+QDMs, but also to support regression testing.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -580,48 +592,68 @@ but we found that they would also incur in the same problems.
 %% {\color{red}In the next section we present more details about our architectural decisions and implementation of our metaprogramming and DSL approach, which deals with the generation and test of QDMs.}
 
 
-
-
-
-
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Methodology
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{Methodology}\label{sec:Methodology}
 
-% O desenvolvimento do SISDOT deu-se no âmbito do projeto PROMISE-EB (Projeto de Pesquisa para Validação de Práticas e Métodos de Desenvolvimento de Software para o Exército Brasileiro). Entre as atividades deste projeto estava o desenvolvimento do SISDOT, a partir de um sistema já existente, escrito na linguagem Delphi e voltado para o ambiente desktop.
+We started this research by conducting a
+reverse engineering of a previous version of
+SISDOT, which was originally developed
+using a desktop client-server architecture---based on the Oracle Forms technology.
+This activity
+mostly involved \emph{walkthroughs} of
+the legacy system, interactions with the
+domain experts, and access to the original
+system documentation. After getting a
+general understanding about the domain, we soon
+realized that the use of a rule based system
+could simplify the implementation of the
+algorithms related to the QDM generation. Due to the
+requirements introduced in Section~\ref{}, our
+decision was not to implement the rules directly
+in the source code, but instead use templates
+to generate these rules from higher-level
+relationships available in the domain model.
 
-The development of SISDOT took place within the scope of the project PROMISE-EB (Project of Research for Validation of Practices and Methods of Software Development for the Brazilian Army). Among the activities of this project was the development of SISDOT, from an existing system, written in the Delphi language and aimed at the desktop environment.
+We then decided to implement a
+\emph{proof-of-concept} of the system,
+focusing on the automatic generation of
+low-level rules (in the Drools format)
+from \callers. Only experienced developers
+work on this activity. Based on these low-level
+rules, we should be able to generate
+QDMs, even though, as a \emph{proof-of-concept},
+the GUI and many modules of the
+system had not been developed yet. After
+spending some effort on testing, we found
+the general design promising, and started
+to refine the \emph{proof-of-concept architecture}
+related to QDM generation and
+develop the remaining parts of the system. The size
+of the development team increased at this moment, and
+thus hese activities were conducted in parallel. 
 
-% Como não foi possível utilizar o sistema legado, foi realizada uma engenharia reversa a partir do manual do usuário deste sistema, já que sistemas legados costumam ser uma das fontes de informação essenciais para a análise de domínio de aplicações. Além disso, foi realizado diversas interações com os usuários do sistema, os quais possuiam um domínio abrangente do sistema legado. A Engenharia de Domínio (ED) se preocupa com a identificação e modelagem de características comuns e variáveis em aplicações de um dado domínio, gerando como resultado modelos de domínio (por exemplo, casos de uso de domínio, classes do domínio e etc.), com o apoio oferecido por processos de ED que, geralmente, compreendem as fases de análise, projeto e implementação foi possível identificar as funcionalidades e regras de negócio do sistema legado (SISDOT).
-
-As it was not possible to use the legacy system, reverse engineering was done from the user manual of this system, since legacy systems are often one of the essential sources of information for the application domain analysis. Furthermore, a number of interactions were made with the users of the system, which had a comprehensive domain of the legacy system. Domain Engineering (DE) is concerned with the identification and modeling of common and variable characteristics in applications of a given domain, resulting in domain models (for example, domain use cases, domain classes and etc.) with the support offered by DE processes that generally comprise the phases of analysis, design and implementation, it was possible to identify the functionalities and business rules of the legacy system (SISDOT).
-
-% O desenvolvimento do sistema foi baseado no processo de desenvolvimento ágil, onde em cada sprint eram realizadas as fases de análise, projeto, implementação, teste e implantação. Na fase de análise foi realizado o levantamento de requisitos a partir das informações contidas no manual de uso do sistema legado e complementadas pelos usuários do sistema. Na fase de projeto os modelos de análise foram refinados visando a construção ou adaptação da arquitetura do domínio. Os modelos da fase de projeto quase sempre eram informais, exceto em alguns casos mais complicados, com a intenção de dar uma visão geral do que deveria ser desenvolvido em determinado sprint. Na fase de implementação foram escritos os códigos necessários, juntamente com seus casos de teste. Ao fim do sprint era realizada a implantação no ambiente de homologação, permitindo a utilização por parte dos usuários e seus respectivos feedbacks. Essas iterações permitiram o refinamento das funcionalidades e as possíveis alterações necessárias para a execução das funcionalidades.
-
-\textcolor{red}{The development of the system was based on the agile development process}, where in each sprint the phases of analysis, design, implementation, testing and deployment were performed. \textcolor{yellow}{In the analysis phase, requirements were surveyed} based on the information contained in the legacy system user manual and \textcolor{red}{complemented by the users of the system}. In the design phase the analysis models were refined aiming at the construction or adaptation of the architecture of the domain. The design phase models were almost always informal, except in some cases more complicated, with the intention of giving an overview of what should be developed in a given sprint. In the implementation phase the necessary codes were written along with their test cases. At the end of the sprint, the deployment was carried out in the homologation environment, allowing the users to use and return their respective feedbacks. These iterations allowed the refinement of the functionalities and the possible changes necessary for the execution of the functionalities.
-
-% Durante a modelagem das entidades referentes ao domínio da high level rule, foi identificada a semelhança entre a definição de um high level rule e uma regra do tipo ``se-então''. Como os high level rules servem de base para a geração de QDMs foi identificado que estes poderiam ser gerados automaticamente por um rule engine, a partir de um conjunto de regras ``se-então'', os high level rule. Com isso, foi então escolhido o Drools como rule engine, uma vez que: a equipe já possuia conhecimento sobre a ferramenta, a existência de uma linguagem que permitiria a conversão, com facilidade, de high level rule para esta linguagem, vasta documentação e uma comunidade expressiva, além de ser desenvolvida por uma empresa conceituada no mundo do desenvolvimento de software, a RedHat, hoje parte da IBM.
-
-\textcolor{red}{During the modeling of entities related to the high level rule domain}, the similarity between the definition of a high level rule and a ``if-then'' rule was identified. As high level rules serve as a basis for the generation of QDMs, it has been identified that they could be generated automatically by a rule engine, from a set of ``if-then'' rules, the high level rule. Based on that, Drools was chosen as a rule engine, since: the team already had knowledge about the tool, the existence of a language that would allow the conversion, with ease, of high level rule for this language, extensive documentation and a expressive community, in addition to being developed by a reputed company in the world of software development, RedHat, now part of IBM.
-
-% Os testes iniciais para a geração de QDMs exigiam a declaração de high level rule na linguagem Java, o que era, na maioria dos casos, muito moroso, exigindo dezenas de linhas de código, mesmo utilizando alguns métodos auxiliares que aumentavam o reuso. Além disso, a definição do resultado esperado, para comparar com o QDM gerado, necessitava da presença do usuário, para indicar/verificar os resultados reais. Quando não era possível a presença do usuário, o testador devia analisar manualmente o QC para identificar os resultados esperados, e declará-los utilizando a linguagem Java para a conferência no final da execução dos testes. Estes foram os fatores essenciais que levaram ao desenvolvimento de uma DSL, que visava facilitar a declaração de high level rule, e do uso da ferramenta cucumber para a definição de casos de teste. Apesar disso, os testes ainda eram definidos de forma manual, embora já houvesse um ganho expressivo de produtividade, e ainda necessitavam do usuário ou de uma análise do QC para definição dos resultados esperados. Assim, foi desenvolvida uma solução para a geração automática de testes e para a geração de QDMs, onde eram gerados automaticamente tanto o high level rule quanto o resultado esperado, assim como a definição do caso de teste em cucumber.
-
-The initial tests for generating QDMs required the declaration of high level rules in the Java language, which was, in most cases, very time-consuming, requiring dozens of code lines, even using some auxiliary methods that increased reuse. Furthermore, the definition of the expected result, to compare with the generated QDM, required the presence of the user to indicate/verify the actual results. When user presence was not possible, the tester should manually analyze the QC to identify expected results, and declare them using the Java language for the conference at the end of the test run. These were the key factors that led to the development of a DSL, which aimed to facilitate the declaration of high level rule, and the use of the Cucumber tool for the definition of test cases. Despite this, the tests were still manually defined, although there was already an expressive gain in productivity, and they still needed the user or a QC analysis to define the expected results. Thus, a solution was developed for the automatic generation of tests and for the generation of QDMs, where both the high level rule and the expected result were generated automatically, as well as the definition of the test case in Cucumber.
+In order to validate the implementation of
+the mechanism of QDM generation, we had to
+explore a number of scenarios, in particular
+organizational unities of the Brazilian Army
+with a deep organizational hierarchy (such as
+AMAN\footnote{\emph{Academia Militar das Agulhas Negras}},
+with more than 2000 effectives). Therefore, populating
+a database scheme with all information necessary
+to test the QDM generation is a time-consuming task,
+and then we started working on a testing infrastructure.
+This infrastructure uses a DSL for specifying \callers and
+a property based approach to generate organizational
+unities with different structures. 
 
 %\begin{figure}[!ht] %\centering
 %	\includegraphics[scale=0.40]{img/processo.png}
 %	\caption{Tests Generation Process} 
 %	\label{fig:process}
 %\end{figure}
-
-
-
-
-
-
 
 
 
@@ -668,7 +700,15 @@ A high-level rule has one or more distribution rules. Each rule has a type, a va
 One of the factors that motivated the use of a rule based engine was the similarity between \callers and the ``if-then'' rules of these mechanisms.  %whose essential structure is shown in Listing~\ref{code:drlStructure}.
 An \shc has a set of conditions that fits the conditional part of a rule (``if'') and has a set of actions (``then'') that, in this case, trigger the distribution of MEMs throughout the expected military unities.
 
-The list of retrieved \callers contains only Java objects. In order to be able to use the rule engine in a \textcolor{red}{transparent} way for the end users (and also for developers in future maintenance scenarios), we decided to use a meta-programming approach, translating these objects into a set of rules (a program in logic programming) that might be used by a rule-based engine. As mentioned before, we decided to use the \emph{Drools rule-based engine} in the context of SISDOT (Figure \ref{fig:runtime_qdm}), \textcolor{yellow}{mostly because of its integration capabilities with both JEE systems and the Wildfly application server}. Accordingly, the \callers are translated into DRL rules (Listing~\ref{code:drl} presents an example of a \emph{low-level Drools rule}). To this end, we use a template engine (FreeMaker) to implement this particular transformation (Figure \ref{fig:runtime_qdm}), using a template that contains the required \emph{markups} for transforming \shc into \emph{low-level} Drools rules. That is, for each \shc, the template engine populates the template, resulting in a DRL rule consistent with the converted \shc.
+The list of retrieved \callers contains only Java objects. In order to be able to use the rule engine in a \textcolor{red}{transparent} way for the end users (and also for developers in future maintenance scenarios), we decided to use a meta-programming approach, translating these objects into a set of rules (a program in logic programming) that might be used by a rule-based engine. As mentioned before, we decided to use the \emph{Drools rule-based engine} in the context of SISDOT (Figure \ref{fig:runtime_qdm}), \textcolor{yellow}{mostly because of its integration capabilities with both JEE systems and the Wildfly application server}. Accordingly, the \callers are translated into DRL rules (Listing~\ref{code:drl} presents an example of a \emph{low-level Drools rule}). To this end, we use a template engine (FreeMaker) to implement this particular transformation (Figure \ref{fig:runtime_qdm}), using a template that contains the required \emph{markups} for transforming \shc into \emph{low-level} Drools rules. That is, for each \shc, the template engine populates the template, resulting in a DRL rule consistent with the converted \shc. Figure~\ref{fig:seq-diagram} show two scenarios of use of SISDOT. In the first, the domain expert uses the SISDOT Web module to specify \callers. In the second, the domain expert generates a QDM for a specific military unit.
+
+\begin{figure*}[htb]
+  \includegraphics[scale=0.6]{img/diagram.pdf}
+  \caption{Abstract sequence of
+    events scenarios for specifying \callers and for generating QDMs}.
+  \label{fig:seq-diagram} 
+\end{figure*}
+
 % A code snippet of the template used for DRL generation can be seen in Appendix A. 
 
 \begin{lstlisting}[frame=single, float=*t, language=DRL, caption=Example of a \emph{low-level Drools rule}, label={code:drl}]
