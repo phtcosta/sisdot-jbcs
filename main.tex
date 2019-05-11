@@ -31,6 +31,8 @@
 	keywordstyle=[2]{\textbf},
 	morecomment=[l]{//}, 
 	morecomment=[s]{/*}{*/}, 
+	moredelim=[il][\textcolor{annotationColor}]{$$},
+%    moredelim=[is][\textcolor{annotationColor}]{\%\%}{\%\%}
 	morestring=[b]",
 	showspaces=false,
 	tabsize=2, 
@@ -122,9 +124,9 @@
 
 \articletype{Article Type}%
 
-\received{26 April 2016}
-\revised{6 June 2016}
-\accepted{6 June 2016}
+\received{}
+\revised{}
+\accepted{}
 
 \raggedbottom
 
@@ -641,7 +643,6 @@ The component responsible for generating QDM works only with Java objects. Then 
 
 Xtend is a Java-based, all-purpose, fully-featured, fully interoperable Java programming language. Xtend has a more concise syntax than Java and provides powerful features like type inference, extension methods, dispatch methods and lambda expressions, besides multiline template expressions, which are useful when writing code generators and other customizations \cite{bettini2016}, this being one of the reasons why we chose to use it in our solution.
 
-\begin{small}
 \begin{lstlisting}[frame=single, language=Xtend, caption={\it Code Generation}, label={code:xtend_generator}]
 class HLRDslGenerator extends AbstractGenerator {
 	static final String BASE_PACKAGE = "br/mil/eb/cds/sisdot/qdm/test/"
@@ -687,7 +688,6 @@ public class <<HELPER>> implements ICallerHelper {
 	'''
 }
 \end{lstlisting}
-\end{small}
 
 
 
@@ -702,7 +702,7 @@ Also implemented were customizations for validation, formatting and quick-fix. W
 In Listing \ref{code:xtend_validation} a simplified version of the implemented customizations, in Xtend, is presented for the validation of high-level rules. %, omitting the other cutomizations, as well as imports, auxiliary methods, among others
 As shown, duplicate high-level rules are validated, as they must be unique because they serve to identify the high-level rule, and invalid codes, which must be greater than zero.
 
-\begin{small}
+
 \begin{lstlisting}[frame=single, language=Xtend, caption={\it Validation Customization}, label={code:xtend_validation}]
 class HLRDslValidator extends AbstractHLRDslValidator {
 
@@ -713,7 +713,7 @@ class HLRDslValidator extends AbstractHLRDslValidator {
 	
 	static var Map<Integer, Rule> callerMap = new HashMap;
 
-	@Check
+	$$@Check
 	def checkDuplicatedCode(Rule caller) {
 		if (callerMap.containsKey(caller.code)) {
 			error(DUPE_CODE_MSG + caller.code, 
@@ -724,7 +724,7 @@ class HLRDslValidator extends AbstractHLRDslValidator {
 		}
 	}
 
-	@Check
+	$$@Check
 	def checkInvalidCode(Rule caller) {
 		if (caller.code <= 0) {
 			error(INVALID_CODE_MSG + caller.code, 
@@ -734,7 +734,7 @@ class HLRDslValidator extends AbstractHLRDslValidator {
 	}
 }	
 \end{lstlisting}
-\end{small}
+
 
 %Na Listing \ref{code:xtend_quickfix} é apresentada uma versão simplificada das customizações implementadas, em Xtend, para o quickfix da validação de código duplicado dos high-level rules.
 
@@ -747,13 +747,14 @@ In the Listing \ref{code:xtend_quickfix} a simplified version of the customizati
 
 During the development of DSL, tests were generated which are executed during the DSL build process. Non-exhaustive tests were performed to verify the parser operation, the custom validations, and the basic behavior of the modeled entities. It is possible to develop tests that validate the editor generated in the user interface itself, executed in an instance of eclipse. User interface (UI) tests have not been developed in this project.
 
-\begin{small}
+
 \begin{lstlisting}[frame=single, language=Xtend, caption={\it Quickfix Customization}, label={code:xtend_quickfix}]
 class HLRDslQuickfixProvider extends DefaultQuickfixProvider {
 
-	@Fix(HLRDslValidator.DUPE_CODE)
+	$$@Fix(HLRDslValidator.DUPE_CODE)
 	def capitalizeName(Issue issue, IssueResolutionAcceptor acceptor) {
-		acceptor.accept(issue, 'Duplicated code', HLRDslValidator.DUPE_CODE_MSG+issue.data, 'Entity.gif') [
+		acceptor.accept(issue, 'Duplicated code', 
+		            HLRDslValidator.DUPE_CODE_MSG+issue.data, 'Entity.gif') [
 			element, context |
 			val model = element.eContainer as Model
 			val max = model.rules.map[code].max
@@ -763,12 +764,12 @@ class HLRDslQuickfixProvider extends DefaultQuickfixProvider {
 	}
 }
 \end{lstlisting}
-\end{small}
+
 
 Listing \ref{code:dslExample} presents a simple example of a \shc declaration using our DSL. The goal of this rule is to distribute the materials (defined in the list of materials construct) for \emph{operational} OMs (see the type construct) and militaries \emph{not working in the specified list of departments} with a set of qualifications and roles. While the definition of this rule using our DSL requires 12 lines of code, the corresponding definition of the same rule using a Java test case requires around 30 lines of imperative code.
 
-\begin{small}
-	\begin{lstlisting}[frame=single, language=DSL, caption={\it Example of a \shc declaration using our DSL}, label={code:dslExample}]
+
+\begin{lstlisting}[frame=single, language=DSL, caption={\it Example of a \shc declaration using our DSL}, label={code:dslExample}]
 rule 1 { 
   type = OPERATIONAL, 
   materials = [ 
@@ -780,8 +781,8 @@ rule 1 {
     (type=ROLE, values=[2, 12, 13, 15, 21, 46])
   ]
 }
-	\end{lstlisting}
-\end{small}
+\end{lstlisting}
+
 
 Our first testing approach consists on the specification of the \callers using \hlrdsl and the specification of the
 \emph{behavior under test} using the Cucumber framework~\cite{wynne2017cucumber} (we present an example in Listing \ref{code:cucumber}).
@@ -950,7 +951,7 @@ For this work 100 scenarios were specified. All generated scenarios, independent
 
 \begin{figure}[!ht] 
     \centering
-	\includegraphics[scale=0.4]{img/processo.png}
+	\includegraphics[scale=0.53]{img/processo.png}
 	\caption{Tests Generation Process} 
 	\label{fig:process}
 \end{figure}
